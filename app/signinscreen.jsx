@@ -4,7 +4,7 @@ import { Stack, useRouter } from "expo-router";
 import axios from 'axios';
 import * as yup from 'yup';
 import { Ionicons } from '@expo/vector-icons'; // Make sure to install expo-vector-icons
-import { REACT_APP_API_URL } from '@env';
+import { API_URL } from '@env';
 
 const validationSchema = yup.object().shape({
   email: yup.string().email('Invalid email').required('Email is required'),
@@ -22,7 +22,7 @@ const WelcomeBackScreen = () => {
     try {
       await validationSchema.validate({ email, password }, { abortEarly: false });
       setErrors({});
-      const response = await axios.post(`${REACT_APP_API_URL}/api/users/signin`, {
+      const response = await axios.post(`${API_URL}/api/users/signin`, {
         email,
         password
       });

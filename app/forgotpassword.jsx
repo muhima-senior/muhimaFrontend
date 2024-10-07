@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Stat
 import { Stack, useRouter } from "expo-router";
 import axios from 'axios';
 import * as yup from 'yup';
-import { REACT_APP_API_URL } from '@env';
+import { API_URL } from '@env';
 
 
 const validationSchema = yup.object().shape({
@@ -22,7 +22,7 @@ const ForgotPasswordScreen = () => {
       await validationSchema.validate({ email }, { abortEarly: false });
 
 
-      const response = await axios.post(`${REACT_APP_API_URL}/api/users/forget-password`, {
+      const response = await axios.post(`${API_URL}/api/users/forget-password`, {
         email,
       });
 

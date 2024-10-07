@@ -4,7 +4,7 @@ import { Stack, useRouter } from "expo-router";
 import axios from 'axios';
 import * as yup from 'yup';
 import { Ionicons } from '@expo/vector-icons';
-import { REACT_APP_API_URL } from '@env';
+import { API_URL } from '@env';
 
 const validationSchema = yup.object().shape({
   fullName: yup.string().required('Full name is required'),
@@ -29,8 +29,8 @@ const CreateAccountScreen = () => {
       setIsLoading(true);
       await validationSchema.validate({ fullName, email, password, verifyPassword }, { abortEarly: false });
 
-      const api = axios.create({ baseURL: REACT_APP_API_URL });
-      const response = await api.post(`${REACT_APP_API_URL}/api/users/signup`, {
+      const api = axios.create({ baseURL: API_URL });
+      const response = await api.post(`${API_URL}/api/users/signup`, {
         username: fullName,
         email,
         password,

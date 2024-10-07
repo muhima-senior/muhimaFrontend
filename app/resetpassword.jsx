@@ -4,7 +4,7 @@ import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 import axios from 'axios';
 import * as yup from 'yup';
 import { Ionicons } from '@expo/vector-icons';
-import { REACT_APP_API_URL } from '@env';
+import { API_URL } from '@env';
 
 const validationSchema = yup.object().shape({
   code: yup.string().required('Verification code is required'),
@@ -29,7 +29,7 @@ const ResetPasswordScreen = () => {
       await validationSchema.validate({ code, password, confirmPassword }, { abortEarly: false });
 
 
-      const response = await axios.post(`${REACT_APP_API_URL}/api/users/reset-password`, {
+      const response = await axios.post(`${API_URL}/api/users/reset-password`, {
         email,
         resetCode: code,
         newPassword: password,
