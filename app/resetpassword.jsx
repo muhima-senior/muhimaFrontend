@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, StatusBar, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, StatusBar, Alert, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 import axios from 'axios';
 import * as yup from 'yup';
 import { Ionicons } from '@expo/vector-icons';
-import { API_URL } from '@env';
+import { REACT_APP_API_URL_NEW } from '@env';
+import { COLORS, FONT, SIZES, SHADOWS } from '../constants/theme';
 
 const validationSchema = yup.object().shape({
   code: yup.string().required('Verification code is required'),
@@ -28,8 +29,7 @@ const ResetPasswordScreen = () => {
       setIsLoading(true);
       await validationSchema.validate({ code, password, confirmPassword }, { abortEarly: false });
 
-
-      const response = await axios.post(`${API_URL}/api/users/reset-password`, {
+      const response = await axios.post(`${REACT_APP_API_URL_NEW}/api/users/reset-password`, {
         email,
         resetCode: code,
         newPassword: password,
@@ -59,71 +59,81 @@ const ResetPasswordScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-      <View style={styles.content}>
-        <Text style={styles.title}>Reset Password</Text>
-        <Text style={styles.subtitle}>Enter the verification code sent to your email and your new password</Text>
+      <StatusBar barStyle="dark-content" backgroundColor={COLORS.lightWhite} />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardAvoidingView}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollViewContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.content}>
+            <Text style={styles.title}>Reset Password</Text>
+            <Text style={styles.subtitle}>Enter the verification code sent to your email and your new password</Text>
 
-        <Text style={styles.fieldLabel}>Verification Code</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter verification code"
-          placeholderTextColor="#B0B0B0"
-          value={code}
-          onChangeText={(text) => {
-            setCode(text);
-            setErrors((prevErrors) => ({ ...prevErrors, code: '' }));
-          }}
-          keyboardType="number-pad"
-        />
-        {errors.code && <Text style={styles.errorText}>{errors.code}</Text>}
+            <Text style={styles.fieldLabel}>Verification Code</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter verification code"
+              placeholderTextColor={COLORS.gray}
+              value={code}
+              onChangeText={(text) => {
+                setCode(text);
+                setErrors((prevErrors) => ({ ...prevErrors, code: '' }));
+              }}
 
-        <Text style={styles.fieldLabel}>New Password</Text>
-        <View style={styles.passwordContainer}>
-          <TextInput
-            style={styles.passwordInput}
-            placeholder="Enter new password"
-            placeholderTextColor="#B0B0B0"
-            value={password}
-            onChangeText={(text) => {
-              setPassword(text);
-              setErrors((prevErrors) => ({ ...prevErrors, password: '' }));
-            }}
-            secureTextEntry={!showPassword}
-          />
-          <TouchableOpacity onPress={toggleShowPassword} style={styles.showPasswordButton}>
-            <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={24} color="#B0B0B0" />
-          </TouchableOpacity>
-        </View>
-        {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+            />
+            {errors.code && <Text style={styles.errorText}>{errors.code}</Text>}
 
-        <Text style={styles.fieldLabel}>Confirm New Password</Text>
-        <View style={styles.passwordContainer}>
-          <TextInput
-            style={styles.passwordInput}
-            placeholder="Confirm new password"
-            placeholderTextColor="#B0B0B0"
-            value={confirmPassword}
-            onChangeText={(text) => {
-              setConfirmPassword(text);
-              setErrors((prevErrors) => ({ ...prevErrors, confirmPassword: '' }));
-            }}
-            secureTextEntry={!showConfirmPassword}
-          />
-          <TouchableOpacity onPress={toggleShowConfirmPassword} style={styles.showPasswordButton}>
-            <Ionicons name={showConfirmPassword ? 'eye-off' : 'eye'} size={24} color="#B0B0B0" />
-          </TouchableOpacity>
-        </View>
-        {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
+            <Text style={styles.fieldLabel}>New Password</Text>
+            <View style={styles.passwordContainer}>
+              <TextInput
+                style={styles.passwordInput}
+                placeholder="Enter new password"
+                placeholderTextColor={COLORS.gray}
+                value={password}
+                onChangeText={(text) => {
+                  setPassword(text);
+                  setErrors((prevErrors) => ({ ...prevErrors, password: '' }));
+                }}
+                secureTextEntry={!showPassword}
+              />
+              <TouchableOpacity onPress={toggleShowPassword} style={styles.showPasswordButton}>
+                <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={24} color={COLORS.gray} />
+              </TouchableOpacity>
+            </View>
+            {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
-        <TouchableOpacity style={styles.resetButton} onPress={handleResetPassword} disabled={isLoading}>
-          <Text style={styles.resetButtonText}>{isLoading ? 'Resetting...' : 'Reset Password'}</Text>
-        </TouchableOpacity>
+            <Text style={styles.fieldLabel}>Confirm New Password</Text>
+            <View style={styles.passwordContainer}>
+              <TextInput
+                style={styles.passwordInput}
+                placeholder="Confirm new password"
+                placeholderTextColor={COLORS.gray}
+                value={confirmPassword}
+                onChangeText={(text) => {
+                  setConfirmPassword(text);
+                  setErrors((prevErrors) => ({ ...prevErrors, confirmPassword: '' }));
+                }}
+                secureTextEntry={!showConfirmPassword}
+              />
+              <TouchableOpacity onPress={toggleShowConfirmPassword} style={styles.showPasswordButton}>
+                <Ionicons name={showConfirmPassword ? 'eye-off' : 'eye'} size={24} color={COLORS.gray} />
+              </TouchableOpacity>
+            </View>
+            {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
 
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backText}>Back</Text>
-        </TouchableOpacity>
-      </View>
+            <TouchableOpacity style={styles.resetButton} onPress={handleResetPassword} disabled={isLoading}>
+              <Text style={styles.resetButtonText}>{isLoading ? 'Resetting...' : 'Reset Password'}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => router.back()}>
+              <Text style={styles.backText}>Back</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -131,90 +141,100 @@ const ResetPasswordScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.lightWhite,
+  },
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    padding: SIZES.large,
   },
   content: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 20,
   },
   title: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginBottom: 10,
+    fontSize: SIZES.xLarge,
+    fontFamily: FONT.bold,
+    color: COLORS.primary,
+    marginBottom: SIZES.small,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#666666',
-    marginBottom: 40,
+    fontSize: SIZES.medium,
+    fontFamily: FONT.regular,
+    color: COLORS.gray,
+    marginBottom: SIZES.xLarge,
     textAlign: 'center',
   },
   input: {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: COLORS.white,
     width: '100%',
     height: 50,
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    marginBottom: 15,
-    fontSize: 16,
-    color: '#333333',
+    borderRadius: SIZES.small,
+    paddingHorizontal: SIZES.medium,
+    marginBottom: SIZES.medium,
+    fontSize: SIZES.medium,
+    fontFamily: FONT.regular,
+    color: COLORS.primary,
+    ...SHADOWS.small,
   },
   passwordContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F5F5F5',
+    backgroundColor: COLORS.white,
     width: '100%',
     height: 50,
-    borderRadius: 10,
-    marginBottom: 15,
+    borderRadius: SIZES.small,
+    marginBottom: SIZES.medium,
+    ...SHADOWS.small,
   },
   passwordInput: {
     flex: 1,
     height: '100%',
-    paddingHorizontal: 15,
-    fontSize: 16,
-    color: '#333333',
+    paddingHorizontal: SIZES.medium,
+    fontSize: SIZES.medium,
+    fontFamily: FONT.regular,
+    color: COLORS.primary,
   },
   showPasswordButton: {
-    padding: 10,
+    padding: SIZES.small,
   },
   resetButton: {
-    backgroundColor: '#1E90FF',
+    backgroundColor: COLORS.primary,
     width: '100%',
     height: 50,
-    borderRadius: 25,
+    borderRadius: SIZES.medium,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    marginBottom: SIZES.large,
+    ...SHADOWS.medium,
   },
   resetButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
+    color: COLORS.white,
+    fontSize: SIZES.large,
+    fontFamily: FONT.bold,
   },
   backText: {
-    fontSize: 16,
-    color: '#1E90FF',
-    fontWeight: 'bold',
+    fontSize: SIZES.medium,
+    color: COLORS.primary,
+    fontFamily: FONT.bold,
   },
   errorText: {
-    color: 'red',
-    fontSize: 14,
-    marginBottom: 10,
+    color: COLORS.tertiary,
+    fontSize: SIZES.small,
+    fontFamily: FONT.regular,
+    marginBottom: SIZES.small,
     alignSelf: 'flex-start',
   },
   fieldLabel: {
     alignSelf: 'flex-start',
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333333',
-    marginBottom: 5,
+    fontSize: SIZES.medium,
+    fontFamily: FONT.medium,
+    color: COLORS.gray,
+    marginBottom: SIZES.xSmall,
   },
 });
 

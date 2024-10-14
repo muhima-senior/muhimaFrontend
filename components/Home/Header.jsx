@@ -2,15 +2,15 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Bell } from 'lucide-react-native';
 
-const Header = () => {
+const Header = ({ username, navigation, route }) => {
   return (
     <View style={styles.header}>
       <View style={styles.userInfo}>
         <Image
-          source={{ uri: 'https://img.freepik.com/free-photo/young-beautiful-woman-pink-warm-sweater-natural-look-smiling-portrait-isolated-long-hair_285396-896.jpg?size=626&ext=jpg&ga=GA1.1.2008272138.1727222400&semt=ais_hybrid' }}
+          source={{ uri: 'https://userphotos2.teacheron.com/835322-95145.jpeg' }}
           style={styles.avatar}
         />
-        <Text style={styles.username}>Deema Alrabiah</Text>
+        <Text style={styles.username}>{username}</Text>
       </View>
       <TouchableOpacity>
         <Bell color="#000" size={24} />

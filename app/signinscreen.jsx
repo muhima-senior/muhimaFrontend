@@ -1,35 +1,51 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, StatusBar, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, StatusBar, Alert, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 import { Stack, useRouter } from "expo-router";
 import axios from 'axios';
 import * as yup from 'yup';
-import { Ionicons } from '@expo/vector-icons'; // Make sure to install expo-vector-icons
-import { API_URL } from '@env';
+import { Ionicons } from '@expo/vector-icons';
+import { REACT_APP_API_URL_NEW } from '@env';
+import { COLORS, FONT, SIZES, SHADOWS } from '../constants/theme';
+import { useGlobalStore } from './store/GlobalStore';
+
 
 const validationSchema = yup.object().shape({
   email: yup.string().email('Invalid email').required('Email is required'),
   password: yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
 });
 
-const WelcomeBackScreen = () => {
+const SignInScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const { user, setUser, userType, setUserId } = useGlobalStore();
+
 
   const handleSignIn = async () => {
     try {
       await validationSchema.validate({ email, password }, { abortEarly: false });
       setErrors({});
-      const response = await axios.post(`${API_URL}/api/users/signin`, {
-        email,
-        password
+
+      const api = axios.create({
+        baseURL: REACT_APP_API_URL_NEW,
       });
+      const response = await api.post('/api/users/signin', {
+        email,
+        password,
+        userType
+      });
+      console.log(response.data.username);
 
       if (response.status === 200) {
         Alert.alert('Success', 'Login successful');
-        router.push('home');
+        setUser(response.data.username);
+        setUserId(response.data.userId);
+        if (userType == 'Freelancer')
+          router.push('Freelancer/FreelancerHome');
+        else
+          router.push('home');
       }
     } catch (error) {
       if (error instanceof yup.ValidationError) {
@@ -73,67 +89,77 @@ const WelcomeBackScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-      <View style={styles.content}>
-        <Text style={styles.title}>Welcome Back!</Text>
-        <Text style={styles.subtitle}>Enter your registered Email and Password</Text>
+      <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardAvoidingView}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollViewContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.content}>
+            <Text style={styles.title}>Welcome Back!</Text>
+            <Text style={styles.subtitle}>Enter your registered Email and Password</Text>
 
-        <Text style={styles.fieldLabel}>Email Address</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Email Address"
-          placeholderTextColor="#B0B0B0"
-          value={email}
-          onChangeText={(text) => {
-            setEmail(text);
-            if (errors.email) {
-              setErrors((prevErrors) => ({ ...prevErrors, email: '' }));
-            }
-          }}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-
-        <Text style={styles.fieldLabel}>Password</Text>
-        <View style={styles.passwordContainer}>
-          <TextInput
-            style={styles.passwordInput}
-            placeholder="Password"
-            placeholderTextColor="#B0B0B0"
-            value={password}
-            onChangeText={(text) => {
-              setPassword(text);
-              if (errors.password) {
-                setErrors((prevErrors) => ({ ...prevErrors, password: '' }));
-              }
-            }}
-            secureTextEntry={!showPassword}
-          />
-          <TouchableOpacity onPress={toggleShowPassword} style={styles.showPasswordButton}>
-            <Ionicons
-              name={showPassword ? 'eye-off' : 'eye'}
-              size={24}
-              color="#B0B0B0"
+            <Text style={styles.fieldLabel}>Email Address</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Email Address"
+              placeholderTextColor={COLORS.gray}
+              value={email}
+              onChangeText={(text) => {
+                setEmail(text);
+                if (errors.email) {
+                  setErrors((prevErrors) => ({ ...prevErrors, email: '' }));
+                }
+              }}
+              keyboardType="email-address"
+              autoCapitalize="none"
             />
-          </TouchableOpacity>
-        </View>
-        {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+            {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
-        <TouchableOpacity onPress={handleForgotPassword}>
-          <Text style={styles.forgotPassword}>FORGOT PASSWORD</Text>
-        </TouchableOpacity>
+            <Text style={styles.fieldLabel}>Password</Text>
+            <View style={styles.passwordContainer}>
+              <TextInput
+                style={styles.passwordInput}
+                placeholder="Password"
+                placeholderTextColor={COLORS.gray}
+                value={password}
+                onChangeText={(text) => {
+                  setPassword(text);
+                  if (errors.password) {
+                    setErrors((prevErrors) => ({ ...prevErrors, password: '' }));
+                  }
+                }}
+                secureTextEntry={!showPassword}
+              />
+              <TouchableOpacity onPress={toggleShowPassword} style={styles.showPasswordButton}>
+                <Ionicons
+                  name={showPassword ? 'eye-off' : 'eye'}
+                  size={24}
+                  color={COLORS.gray}
+                />
+              </TouchableOpacity>
+            </View>
+            {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
-        <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
-          <Text style={styles.signInButtonText}>Sign In</Text>
-        </TouchableOpacity>
+            <TouchableOpacity onPress={handleForgotPassword}>
+              <Text style={styles.forgotPassword}>FORGOT PASSWORD</Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity onPress={handleSignUp}>
-          <Text style={styles.signUpText}>
-            Don't Have an Account? <Text style={styles.signUpLink}>Sign Up</Text>
-          </Text>
-        </TouchableOpacity>
-      </View>
+            <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
+              <Text style={styles.signInButtonText}>Sign In</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={handleSignUp}>
+              <Text style={styles.signUpText}>
+                Don't Have an Account? <Text style={styles.signUpLink}>Sign Up</Text>
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -141,101 +167,114 @@ const WelcomeBackScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.lightWhite,
+  },
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
   },
   content: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: SIZES.large,
+    paddingTop: SIZES.xLarge * 2,
+    paddingBottom: SIZES.xLarge,
   },
   title: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginBottom: 10,
+    fontSize: SIZES.xLarge,
+    fontFamily: FONT.bold,
+    color: COLORS.primary,
+    marginBottom: SIZES.small,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#666666',
-    marginBottom: 40,
+    fontSize: SIZES.medium,
+    fontFamily: FONT.regular,
+    color: COLORS.gray,
+    marginBottom: SIZES.xLarge,
     textAlign: 'center',
   },
+  fieldLabel: {
+    alignSelf: 'flex-start',
+    fontSize: SIZES.medium,
+    fontFamily: FONT.medium,
+    color: COLORS.gray,
+    marginBottom: SIZES.xSmall,
+  },
   input: {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: COLORS.white,
     width: '100%',
     height: 50,
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    marginBottom: 15,
-    fontSize: 16,
-    color: '#333333',
+    borderRadius: SIZES.small,
+    paddingHorizontal: SIZES.medium,
+    marginBottom: SIZES.medium,
+    fontSize: SIZES.medium,
+    fontFamily: FONT.regular,
+    color: COLORS.primary,
+    ...SHADOWS.small,
   },
   passwordContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F5F5F5',
+    backgroundColor: COLORS.white,
     width: '100%',
     height: 50,
-    borderRadius: 10,
-    marginBottom: 15,
+    borderRadius: SIZES.small,
+    marginBottom: SIZES.medium,
+    ...SHADOWS.small,
   },
   passwordInput: {
     flex: 1,
     height: '100%',
-    paddingHorizontal: 15,
-    fontSize: 16,
-    color: '#333333',
+    paddingHorizontal: SIZES.medium,
+    fontSize: SIZES.medium,
+    fontFamily: FONT.regular,
+    color: COLORS.primary,
   },
   showPasswordButton: {
-    padding: 10,
+    padding: SIZES.small,
   },
   forgotPassword: {
-    color: '#1E90FF',
-    fontSize: 14,
+    color: COLORS.primary,
+    fontSize: SIZES.medium,
+    fontFamily: FONT.medium,
     alignSelf: 'flex-end',
-    marginBottom: 20,
-    fontWeight: '500',
+    marginBottom: SIZES.large,
   },
   signInButton: {
-    backgroundColor: '#1E90FF',
+    backgroundColor: COLORS.primary,
     width: '100%',
     height: 50,
     borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    marginBottom: SIZES.large,
+    ...SHADOWS.medium,
   },
   signInButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
+    color: COLORS.white,
+    fontSize: SIZES.large,
+    fontFamily: FONT.bold,
   },
   signUpText: {
-    fontSize: 16,
-    color: '#333333',
+    fontSize: SIZES.medium,
+    fontFamily: FONT.regular,
+    color: COLORS.gray,
   },
   signUpLink: {
-    color: '#1E90FF',
-    fontWeight: 'bold',
+    color: COLORS.primary,
+    fontFamily: FONT.bold,
   },
   errorText: {
-    color: 'red',
-    fontSize: 14,
-    marginBottom: 10,
+    color: COLORS.tertiary,
+    fontSize: SIZES.small,
+    fontFamily: FONT.regular,
+    marginBottom: SIZES.small,
     alignSelf: 'flex-start',
-  },
-  fieldLabel: {
-    alignSelf: 'flex-start',
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333333',
-    marginBottom: 5,
   },
 });
 
-export default WelcomeBackScreen;
+export default SignInScreen;

@@ -1,27 +1,32 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ImageBackground, SafeAreaView, Dimensions } from 'react-native';
 import { Stack, useRouter } from "expo-router";
+import { useGlobalStore } from './store/GlobalStore';
 
 const { width, height } = Dimensions.get('window');
 
 const MuhimaSignInScreen = () => {
   const router = useRouter();
+  const { userType, setUserType } = useGlobalStore();
+
 
   const HandleSignIn = () => {
+    setUserType("Homeowner")
     router.push({
       pathname: 'signinscreen',
     });
   };
 
-    const HandleFreelancerSignIn = () => {
-      router.push({
-        pathname: 'Freelancer/freelancersigninscreen',
-      });
-    };
+  const HandleFreelancerSignIn = () => {
+    setUserType("Freelancer")
+    router.push({
+      pathname: 'signinscreen',
+    });
+  };
 
 
-    
- 
+
+
 
   return (
     <SafeAreaView style={styles.container}>

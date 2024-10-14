@@ -6,7 +6,7 @@ const categories = [
   { id: '1', name: 'Electrician', icon: Zap },
   { id: '2', name: 'Painter', icon: PaintBucket },
   { id: '3', name: 'Cleaner', icon: Brush },
-  { id: '4', name: 'Tiling', icon: Scissors },
+  { id: '4', name: 'HairDresser', icon: Scissors },
   { id: '5', name: 'AC Repair', icon: Snowflake },
   { id: '6', name: 'Plumber', icon: Droplet },
   { id: '7', name: 'Carpenter', icon: Hammer },
@@ -36,6 +36,7 @@ const CategoriesSection = () => {
         renderItem={({ item }) => <CategoryItem item={item} />}
         keyExtractor={item => item.id}
         numColumns={4}
+        nestedScrollEnabled={true}
       />
     </View>
   );

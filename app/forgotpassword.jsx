@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, StatusBar, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, StatusBar, Alert, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 import { Stack, useRouter } from "expo-router";
 import axios from 'axios';
 import * as yup from 'yup';
-import { API_URL } from '@env';
-
+import { REACT_APP_API_URL_NEW } from '@env';
+import { COLORS, FONT, SIZES, SHADOWS } from '../constants/theme';
 
 const validationSchema = yup.object().shape({
   email: yup.string().email('Invalid email').required('Email is required'),
@@ -21,8 +21,8 @@ const ForgotPasswordScreen = () => {
       setIsLoading(true);
       await validationSchema.validate({ email }, { abortEarly: false });
 
-
-      const response = await axios.post(`${API_URL}/api/users/forget-password`, {
+      // Replace with your actual API endpoint
+      const response = await axios.post(`${REACT_APP_API_URL_NEW}/api/users/forget-password`, {
         email,
       });
 
@@ -50,31 +50,41 @@ const ForgotPasswordScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-      <View style={styles.content}>
-        <Text style={styles.title}>Forgot Password</Text>
-        <Text style={styles.subtitle}>Enter your email to receive a verification code</Text>
+      <StatusBar barStyle="dark-content" backgroundColor={COLORS.lightWhite} />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardAvoidingView}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollViewContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.content}>
+            <Text style={styles.title}>Forgot Password</Text>
+            <Text style={styles.subtitle}>Enter your email to receive a verification code</Text>
 
-        <Text style={styles.fieldLabel}>Email</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your email address"
-          placeholderTextColor="#B0B0B0"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+            <Text style={styles.fieldLabel}>Email</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your email address"
+              placeholderTextColor={COLORS.gray}
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+            {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
-        <TouchableOpacity style={styles.sendCodeButton} onPress={handleSendCode} disabled={isLoading}>
-          <Text style={styles.sendCodeButtonText}>{isLoading ? 'Sending...' : 'Send Code'}</Text>
-        </TouchableOpacity>
+            <TouchableOpacity style={styles.sendCodeButton} onPress={handleSendCode} disabled={isLoading}>
+              <Text style={styles.sendCodeButtonText}>{isLoading ? 'Sending...' : 'Send Code'}</Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backText}>Back to Sign In</Text>
-        </TouchableOpacity>
-      </View>
+            <TouchableOpacity onPress={() => router.back()}>
+              <Text style={styles.backText}>Back to Sign In</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -82,71 +92,79 @@ const ForgotPasswordScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.lightWhite,
+  },
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    padding: SIZES.large,
   },
   content: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 20,
   },
   title: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginBottom: 10,
+    fontSize: SIZES.xLarge,
+    fontFamily: FONT.bold,
+    color: COLORS.primary,
+    marginBottom: SIZES.small,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#666666',
-    marginBottom: 40,
+    fontSize: SIZES.medium,
+    fontFamily: FONT.regular,
+    color: COLORS.gray,
+    marginBottom: SIZES.xLarge,
     textAlign: 'center',
   },
   input: {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: COLORS.white,
     width: '100%',
     height: 50,
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    marginBottom: 15,
-    fontSize: 16,
-    color: '#333333',
+    borderRadius: SIZES.small,
+    paddingHorizontal: SIZES.medium,
+    marginBottom: SIZES.medium,
+    fontSize: SIZES.medium,
+    fontFamily: FONT.regular,
+    color: COLORS.primary,
+    ...SHADOWS.small,
   },
   sendCodeButton: {
-    backgroundColor: '#1E90FF',
+    backgroundColor: COLORS.primary,
     width: '100%',
     height: 50,
-    borderRadius: 25,
+    borderRadius: SIZES.medium,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    marginBottom: SIZES.large,
+    ...SHADOWS.medium,
   },
   sendCodeButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
+    color: COLORS.white,
+    fontSize: SIZES.large,
+    fontFamily: FONT.bold,
   },
   backText: {
-    fontSize: 16,
-    color: '#1E90FF',
-    fontWeight: 'bold',
+    fontSize: SIZES.medium,
+    color: COLORS.primary,
+    fontFamily: FONT.bold,
   },
   errorText: {
-    color: 'red',
-    fontSize: 14,
-    marginBottom: 10,
+    color: COLORS.tertiary,
+    fontSize: SIZES.small,
+    fontFamily: FONT.regular,
+    marginBottom: SIZES.small,
     alignSelf: 'flex-start',
   },
   fieldLabel: {
     alignSelf: 'flex-start',
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333333',
-    marginBottom: 5,
+    fontSize: SIZES.medium,
+    fontFamily: FONT.medium,
+    color: COLORS.gray,
+    marginBottom: SIZES.xSmall,
   },
 });
 

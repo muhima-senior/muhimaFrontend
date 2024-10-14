@@ -1,11 +1,9 @@
+import React from 'react';
 import { Stack } from "expo-router";
 import { useFonts } from "expo-font";
-// import * as SplashScreen from "expo-splash-screen";
-
-// SplashScreen.preventAutoHideAsync();
+import { GlobalStoreProvider } from './store/GlobalStore'; // Adjust the import path as needed
 
 export const unstable_settings = {
-  // Ensure any route can link back to /
   initialRouteName: "home",
 };
 
@@ -21,19 +19,21 @@ const Layout = () => {
   }
 
   return (
-    <Stack initialRouteName="home">
-      <Stack.Screen name="home" />
-      <Stack.Screen name="bestservicescreen" />
-      <Stack.Screen name="servicedetailscreen" />
-      <Stack.Screen name="bookingsummary" />
-      <Stack.Screen name="landingpage" />
-      <Stack.Screen name="signinscreen" />
-      <Stack.Screen name="signupscreen" />
-      <Stack.Screen name="Freelancer/freelancersigninscreen" />
-      <Stack.Screen name="Freelancer/freelancersignup" />
-
-    </Stack>
-  )
+    <GlobalStoreProvider>
+      <Stack initialRouteName="home">
+        <Stack.Screen name="home" />
+        <Stack.Screen name="bestservicescreen" />
+        <Stack.Screen name="servicedetailscreen" />
+        <Stack.Screen name="bookingsummary" />
+        <Stack.Screen name="landingpage" />
+        <Stack.Screen name="signinscreen" />
+        <Stack.Screen name="signupscreen" />
+        <Stack.Screen name="Freelancer/createprofile" />
+        <Stack.Screen name="Freelancer/FreelancerHome" />
+        <Stack.Screen name="Freelancer/createservice" />
+      </Stack>
+    </GlobalStoreProvider>
+  );
 };
 
 export default Layout;
