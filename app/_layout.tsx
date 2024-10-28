@@ -24,7 +24,7 @@ const Layout = () => {
         <Stack.Screen name="home" />
         <Stack.Screen name="bestservicescreen" />
         <Stack.Screen name="servicedetailscreen" />
-        <Stack.Screen name="bookingsummary" />
+        {/* <Stack.Screen name="bookingsummary" /> */}
         <Stack.Screen name="landingpage" />
         <Stack.Screen name="signinscreen" />
         <Stack.Screen name="signupscreen" />

@@ -13,7 +13,10 @@ const BestServicesSection = () => {
   const [loading, setLoading] = useState(true); // Loading state
 
   const handleSeeAll = () => {
-    router.push('/bestservicescreen');
+    router.push({
+      pathname: 'bestservicescreen',
+      params: { type: "best", title: "All Services", category: "None" },
+    });
   };
 
   const getServices = async () => {

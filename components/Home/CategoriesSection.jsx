@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { Zap, PaintBucket, Brush, Scissors, Snowflake, Droplet, Hammer, Flower } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
 
 const categories = [
   { id: '1', name: 'Electrician', icon: Zap },
@@ -13,8 +14,12 @@ const categories = [
   { id: '8', name: 'Gardener', icon: Flower },
 ];
 
-const CategoryItem = ({ item }) => (
-  <TouchableOpacity style={styles.categoryItem}>
+
+const CategoryItem = ({ item, handleCategorySelection }) => (
+  <TouchableOpacity
+    style={styles.categoryItem}
+    onPress={() => handleCategorySelection(item.name)} // Pass a function to handle the press
+  >
     <View style={styles.iconContainer}>
       <item.icon color="#4A90E2" size={24} />
     </View>
@@ -22,7 +27,18 @@ const CategoryItem = ({ item }) => (
   </TouchableOpacity>
 );
 
+
 const CategoriesSection = () => {
+
+  const router = useRouter();
+  const handleCategorySelection = (categoryName) => {
+    console.log("Category: ", categoryName)
+    router.push({
+      pathname: 'bestservicescreen',
+      params: { type: "category", title: `${categoryName} Services`, category: categoryName },
+    });
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -33,7 +49,7 @@ const CategoriesSection = () => {
       </View>
       <FlatList
         data={categories}
-        renderItem={({ item }) => <CategoryItem item={item} />}
+        renderItem={({ item }) => <CategoryItem item={item} handleCategorySelection={handleCategorySelection} />}
         keyExtractor={item => item.id}
         numColumns={4}
         nestedScrollEnabled={true}
