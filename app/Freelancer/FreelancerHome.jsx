@@ -11,7 +11,7 @@ import Base64Image from '../../components/Base64Image';
 
 const FreelancerHomePage = () => {
   const router = useRouter();
-  const [freelancerName, setFreelancerName] = useState("Zoha Mobin");
+ 
   const [upcomingBookings, setUpcomingBookings] = useState(3);
   const [unreadMessages, setUnreadMessages] = useState(2);
   const [earnings, setEarnings] = useState(1250.00);
@@ -77,7 +77,7 @@ const FreelancerHomePage = () => {
         </View>
         <TouchableOpacity onPress={handleEditProfile}>
           <Image
-            source={{ uri: 'https://userphotos2.teacheron.com/835322-95145.jpeg' }}
+            source={{ uri: 'https://global.discourse-cdn.com/flex020/uploads/slicer/original/3X/9/2/921ebe55412a0dddda5037675e52d62e70246f74.png' }}
             style={styles.profilePic}
           />     
         </TouchableOpacity>
