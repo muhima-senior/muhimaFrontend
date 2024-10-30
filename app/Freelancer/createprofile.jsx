@@ -186,7 +186,7 @@ const CreateProfileScreen = () => {
       formData.append('certifications', JSON.stringify(certification.split(',').map(cert => cert.trim())));
 
       // Format and append available slots
-      const formattedSlots = formatAvailableSlots(availableSlots);
+      const formattedSlots = formatAvailableSlots(availableSlots); 
       formData.append('availableSlots', JSON.stringify(formattedSlots));
 
       // Append file data
@@ -195,7 +195,7 @@ const CreateProfileScreen = () => {
       // Make the API request
       const api = axios.create({ baseURL: REACT_APP_API_URL_NEW });
 
-      const apiResponse = await api.post('/api/freelancer', formData, {
+      const apiResponse = await api.post('/api/freelancer', formData, { //API - push to the backend
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -218,67 +218,6 @@ const CreateProfileScreen = () => {
       Alert.alert('Error', `Failed to create profile: ${error.message}`);
     }
   };
-
-
-  //     if (!validatePhoneNumber(phoneNumber)) {
-  //         Alert.alert('Invalid Phone Number', 'Please enter a valid phone number before creating your profile.');
-  //         return;
-  //     }
-
-  //     if (!location) {
-  //         Alert.alert('Location Required', 'Please set your location before creating your profile.');
-  //         return;
-  //     }
-
-  //     if (!profilePicture) {
-  //         Alert.alert('Profile Picture Required', 'Please add a profile picture before creating your profile.');
-  //         return;
-  //     }
-
-  //     try {
-  //         // Convert image to blob (file)
-  //         const response = await fetch(profilePicture);
-  //         const blob = await response.blob();
-
-  //         // Prepare form data to send via POST
-  //         const formData = new FormData();
-  //         formData.append('userId', userId);
-  //         formData.append('mobileNumber', phoneNumber);
-  //         formData.append('location', JSON.stringify({
-  //             type: 'Point',
-  //             coordinates: [location.longitude, location.latitude]
-  //         }));
-  //         formData.append('pictureData', blob, 'profilePicture.jpg'); // Ensure to use a filename for the blob
-
-  //         // Make the API request
-  //         const api = axios.create({ baseURL: REACT_APP_API_URL_NEW });
-
-  //         const apiResponse = await api.post('/api/freelancer', formData, {
-  //           headers: {
-  //             'Content-Type': 'multipart/form-data', // Optional: Axios will set this for you when using FormData
-  //           },
-  //         });
-
-  //         console.log('API Response:', apiResponse.data);
-
-  //         Alert.alert('Success', 'Profile created successfully!');
-  //         router.push('FreelancerHome');
-  //     } catch (error) {
-  //         console.error('Error details:', error.response ? error.response.data : error.message);
-  //         if (error.response) {
-  //             // Handle specific response errors
-  //             console.error('Error status:', error.response.status);
-  //             console.error('Error data:', error.response.data);
-  //         } else if (error.request) {
-  //             // Request was made but no response was received
-  //             console.error('No response received:', error.request);
-  //         } else {
-  //             // Error setting up the request
-  //             console.error('Error message:', error.message);
-  //         }
-  //         Alert.alert('Error', `Failed to create profile: ${error.message}`);
-  //     }
-  // };
 
 
 
