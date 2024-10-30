@@ -15,11 +15,12 @@ const BestServicesScreen = () => {
   const [loading, setLoading] = useState(true);
   const route = useRoute();
 
-  const { title, type, category } = route.params;  // Extracting params from the route
-  console.log(title, type, category)
+  const { title, type, category , freelanceId } = route.params;  // Extracting params from the route
+  console.log(title, type, category, freelanceId)
 
   const getServices = async () => {
     try {
+
       let url = `${REACT_APP_API_URL_NEW}/api/service`;
 
       if (type === "best") {
@@ -28,6 +29,10 @@ const BestServicesScreen = () => {
       else if (type === "category") {
         url = `${REACT_APP_API_URL_NEW}/api/service/category/${category.toLowerCase()}`;
       }
+      else if (type === "freelancer") {
+        url = `${REACT_APP_API_URL_NEW}/api/service/freelancer/${freelanceId}`;
+      }
+
       console.log(url)
       const response = await axios.get(url);
       setServices(response.data);
@@ -63,8 +68,8 @@ const BestServicesScreen = () => {
         </View>
         <FlatList
           data={services}
-          renderItem={({ item }) => <ServiceCard service={item} />}
-          keyExtractor={item => item._id}
+          renderItem={({ item }) => <ServiceCard service={item} cardWidth={0.9} />}
+          keyExtractor={item => item.id}
           contentContainerStyle={styles.list}
           nestedScrollEnabled={true}
         />

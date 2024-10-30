@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SafeAreaView, FlatList, View } from "react-native";
+import { SafeAreaView, FlatList, View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import Header from "../components/Home/Header";
 import { COLORS, SIZES } from "../constants";
@@ -16,7 +16,14 @@ const Home = () => {
 
   const renderHeader = () => (
     <View style={{ padding: SIZES.medium }}>
+      {/* Navigate to Nearby screen */}
       <SearchBar />
+      <TouchableOpacity
+        style={styles.nearbyButton}
+        onPress={() => router.push("/nearby")}
+      >
+        <Text style={styles.nearbyButtonText}>Nearby Services</Text>
+      </TouchableOpacity>
       <CategoriesSection />
     </View>
   );
@@ -44,5 +51,25 @@ const Home = () => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  nearbyButton: {
+    backgroundColor: '#4A90E2',
+    padding: SIZES.small,
+    borderRadius: SIZES.small,
+    marginBottom: SIZES.medium,
+    alignItems: 'center',
+    padding: 10,
+    maxWidth: 300,
+    alignItems: 'center',
+    alignSelf: 'left',
+    margin: 16,
+   },
+  nearbyButtonText: {
+    color: COLORS.white,
+    fontSize: SIZES.medium,
+    fontWeight: 'bold',
+  },
+});
 
 export default Home;

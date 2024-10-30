@@ -68,14 +68,13 @@ const ServiceDetailScreen = () => {
   }, [serviceId]);  // Re-run only when serviceId changes
 
   const handleBookService = () => {
-    console.log("To be implemented")
-    // router.push({
-    //   pathname: 'bookingsummary',
-    //   params: {
-    //     service_id: service._id,
-    //     // service: JSON.stringify(service),
-    //   },
-    // });
+    router.push({
+      pathname: 'bookingsummary',
+      params: {
+        service_id: service._id,
+        // service: JSON.stringify(service),
+      },
+    });
   };
 
   if (loading) {
