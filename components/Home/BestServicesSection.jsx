@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+
 import ServiceCard from './ServiceCard';
 import { useRouter } from 'expo-router';
 import axios from 'axios';
 import { REACT_APP_API_URL_NEW } from '@env';
 
 const BestServicesSection = () => {
-  const navigation = useNavigation();
+ 
   const router = useRouter();
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true); // Loading state
