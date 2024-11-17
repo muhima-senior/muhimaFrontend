@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { ArrowLeft, Search } from 'lucide-react-native';
-import { useRouter, useSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import ServiceCard from '../components/Home/ServiceCard';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
@@ -9,7 +9,7 @@ import { REACT_APP_API_URL_NEW } from '@env';
 
 const BestServicesScreen = () => {
   const router = useRouter();
-  const { title, type, category, freelanceId } = useSearchParams(); // Extract query parameters
+  const { title, type, category, freelanceId } = useLocalSearchParams(); // Extract query parameters
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
 
