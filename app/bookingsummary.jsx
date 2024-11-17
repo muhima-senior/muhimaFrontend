@@ -158,7 +158,7 @@ const BookingSummaryScreen = () => {
             <Icon name="location-outline" size={24} color="#007AFF" />
             <View style={styles.addressTextContainer}>
               <Text style={styles.addressLabel}>Address</Text>
-              <Text style={styles.addressText}>2118 Thornridge California</Text>
+              <Text style={styles.addressText}>3125 Almalqa, Riyadh</Text>
             </View>
             <TouchableOpacity>
               <Text style={styles.changeText}>Change</Text>
