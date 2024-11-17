@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
-import { useRoute, useNavigation } from "@react-navigation/native"
+
 import { router } from "expo-router";
 import { Ionicons } from '@expo/vector-icons'; // Import Ionicons for the cart icon
 import Base64Image from '../../components/Base64Image';
@@ -8,10 +8,10 @@ import Base64Image from '../../components/Base64Image';
 // Get screen width
 const { width: screenWidth } = Dimensions.get('window');
 
-const ServiceCard = ({ service, cardWidth = 0.7, cardMargin = 16, navigation }) => {
+const ServiceCard = ({ service, cardWidth = 0.7, cardMargin = 16 }) => {
 
   // Handle navigation to the service details screen
-  navigation = useNavigation();
+  
   const handleSeeAll = () => {
     console.log("Service selected")
     router.push({
