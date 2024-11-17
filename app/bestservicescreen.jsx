@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { ArrowLeft, Search } from 'lucide-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import ServiceCard from '../components/Home/ServiceCard';
@@ -15,7 +15,6 @@ const BestServicesScreen = () => {
 
   const getServices = async () => {
     try {
-
       let url = `${REACT_APP_API_URL_NEW}/api/service`;
 
       if (type === "best") {
@@ -31,7 +30,6 @@ const BestServicesScreen = () => {
     } catch (error) {
       console.error('Error fetching services:', error);
       setLoading(false); // Stop loading in case of error
-      throw error;
     }
   };
 
@@ -51,13 +49,19 @@ const BestServicesScreen = () => {
             <Search color="#000" size={24} />
           </TouchableOpacity>
         </View>
-        <FlatList
-          data={services}
-          renderItem={({ item }) => <ServiceCard service={item} cardWidth={0.9} />}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.list}
-          nestedScrollEnabled={true}
-        />
+        {loading ? (
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="large" color="#0000ff" />
+          </View>
+        ) : (
+          <FlatList
+            data={services}
+            renderItem={({ item }) => <ServiceCard service={item} cardWidth={0.9} />}
+            keyExtractor={(item, index) => item.id || index.toString()}
+            contentContainerStyle={styles.list}
+            nestedScrollEnabled={true}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
@@ -83,6 +87,11 @@ const styles = StyleSheet.create({
   },
   list: {
     padding: 16,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
