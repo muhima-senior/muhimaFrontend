@@ -87,7 +87,7 @@ const ServiceDetailScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Removed <Stack.Screen> */}
+      {}
       <Stack.Screen
         options={{
           headerShadowVisible: false,
