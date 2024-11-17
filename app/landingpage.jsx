@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ImageBackground, SafeAreaView, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView, Dimensions } from 'react-native';
 import { Stack, useRouter } from "expo-router";
 import { useGlobalStore } from './store/GlobalStore';
 
@@ -9,24 +9,19 @@ const MuhimaSignInScreen = () => {
   const router = useRouter();
   const { userType, setUserType } = useGlobalStore();
 
-
   const HandleSignIn = () => {
-    setUserType("Homeowner")
+    setUserType("Homeowner");
     router.push({
       pathname: 'signinscreen',
     });
   };
 
   const HandleFreelancerSignIn = () => {
-    setUserType("Freelancer")
+    setUserType("Freelancer");
     router.push({
       pathname: 'signinscreen',
     });
   };
-
-
-
-
 
   return (
     <SafeAreaView style={styles.container}>
@@ -36,26 +31,25 @@ const MuhimaSignInScreen = () => {
           headerShown: false,
         }}
       />
-      <ImageBackground
-        source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRygkkjgvrVKbEzhxpXQuN3nR7OEi7BDRp13A&s' }}
-        style={styles.background}
-      >
-        <View style={styles.overlay} />
-        <View style={styles.contentContainer}>
-          <View style={styles.textContainer}>
-            <Text style={styles.title}>Welcome to Muhima</Text>
-            <Text style={styles.subtitle}>Connecting Freelancers with Opportunities</Text>
-          </View>
-          <View style={styles.actionContainer}>
-            <TouchableOpacity style={styles.button} onPress={HandleSignIn}>
-              <Text style={styles.buttonText}>Get Started</Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Text style={styles.freelancerLink} onPress={HandleFreelancerSignIn}>Sign in as Freelancer</Text>
-            </TouchableOpacity>
-          </View>
+      <View style={styles.contentContainer}>
+        <Image
+          source={require('../assets/logo.png')} // Path to your logo image
+          style={styles.logo}
+          resizeMode="contain"
+        />
+        <View style={styles.textContainer}>
+          <Text style={styles.title}>Welcome to Muhima</Text>
+          <Text style={styles.subtitle}>Connecting Freelancers with Opportunities</Text>
         </View>
-      </ImageBackground>
+        <View style={styles.actionContainer}>
+          <TouchableOpacity style={styles.button} onPress={HandleSignIn}>
+            <Text style={styles.buttonText}>Get Started</Text>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Text style={styles.freelancerLink} onPress={HandleFreelancerSignIn}>Sign in as Freelancer</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </SafeAreaView>
   );
 };
@@ -63,15 +57,7 @@ const MuhimaSignInScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  background: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: '#FFFFFF', // Set the background color to white
   },
   contentContainer: {
     flex: 1,
@@ -80,19 +66,24 @@ const styles = StyleSheet.create({
     paddingVertical: height * 0.1,
     paddingHorizontal: width * 0.05,
   },
+  logo: {
+    width: width * 0.6, // Adjust the logo width
+    height: height * 0.2, // Adjust the logo height
+    marginBottom: height * 0.05,
+  },
   textContainer: {
     alignItems: 'center',
   },
   title: {
     fontSize: width * 0.08,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#000000', // Use black text for contrast
     textAlign: 'center',
     marginBottom: height * 0.02,
   },
   subtitle: {
     fontSize: width * 0.045,
-    color: '#FFFFFF',
+    color: '#000000', // Use black text for contrast
     textAlign: 'center',
   },
   actionContainer: {
@@ -117,7 +108,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   freelancerLink: {
-    color: '#FFFFFF',
+    color: '#4169E1',
     fontSize: width * 0.04,
     textDecorationLine: 'underline',
   },
