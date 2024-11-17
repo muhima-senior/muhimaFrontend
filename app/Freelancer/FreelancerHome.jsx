@@ -86,7 +86,7 @@ const FreelancerHomePage = () => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.cardContainer}>
           <StatCard value={upcomingBookings} label="Upcoming Bookings" icon="calendar" />
-          <StatCard value={`$${earnings}`} label="Earnings" icon="cash" />
+          <StatCard value={`SAR${earnings}`} label="Earnings" icon="cash" />
         </View>
 
         <Text style={styles.sectionTitle}>Quick Actions</Text>

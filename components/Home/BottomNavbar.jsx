@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { Home, Grid, Calendar, MessageSquare, User } from 'lucide-react-native';
+import { router } from "expo-router";
 
 const tabs = [
   { name: 'Home', icon: Home },
@@ -11,10 +13,21 @@ const tabs = [
 ];
 
 const BottomNavBar = () => {
+  
+  const handlePress = (tab) => {
+    if (tab.name === 'Bookings') {
+      router.push({
+        pathname: 'mybooking',
+        params: { type: 'homeowner' },
+      });    } else {
+      // Handle other tab navigations here if necessary
+    }
+  };
+
   return (
     <View style={styles.container}>
       {tabs.map((tab, index) => (
-        <TouchableOpacity key={index} style={styles.tab}>
+        <TouchableOpacity key={index} style={styles.tab} onPress={() => handlePress(tab)}>
           <tab.icon color={tab.name === 'Categories' ? '#4A90E2' : '#999'} size={24} />
           <Text style={[styles.tabText, tab.name === 'Categories' && styles.activeTabText]}>
             {tab.name}
