@@ -158,6 +158,7 @@ const CreateProfileScreen = () => {
 
 
   const handleCreateProfile = async () => {
+
     if (!validatePhoneNumber(phoneNumber)) {
       Alert.alert('Invalid Phone Number', 'Please enter a valid phone number before creating your profile.');
       return;
@@ -185,17 +186,18 @@ const CreateProfileScreen = () => {
       formData.append('profileDescription', profileDescription);
       formData.append('certifications', JSON.stringify(certification.split(',').map(cert => cert.trim())));
 
+
       // Format and append available slots
-      const formattedSlots = formatAvailableSlots(availableSlots); 
-      formData.append('availableSlots', JSON.stringify(formattedSlots));
+      const formattedSlots = JSON.stringify(availableSlots);
+      formData.append('availableSlots', formattedSlots);
+      console.log(formattedSlots)
 
       // Append file data
       formData.append('pictureData', profilePictureFile);
 
       // Make the API request
       const api = axios.create({ baseURL: REACT_APP_API_URL_NEW });
-
-      const apiResponse = await api.post('/api/freelancer', formData, { //API - push to the backend
+      const apiResponse = await api.post('/api/freelancer', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -204,7 +206,7 @@ const CreateProfileScreen = () => {
       console.log('API Response:', apiResponse.data);
 
       Alert.alert('Success', 'Profile created successfully!');
-      router.push('FreelancerHome');
+      router.push('Freelancer/FreelancerHome');
     } catch (error) {
       console.error('Error details:', error.response ? error.response.data : error.message);
       if (error.response) {
@@ -219,6 +221,8 @@ const CreateProfileScreen = () => {
     }
   };
 
+
+  
 
 
   return (
