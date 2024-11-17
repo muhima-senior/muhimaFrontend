@@ -51,33 +51,33 @@ const BookingDetailsScreen = () => {
   const dummyData = {
     serviceName: 'Living Room Cleaning',
     rating: 5.0,
-    price: '$190',
+    price: '190 SAR',
     providerName: 'Ronald Richards',
     bookingStatus: [
       {
         status: 'Booking Confirmed',
-        date: 'Mon, Oct 02, 2023',
+        date: 'Mon, Oct 02, 2024',
         description: 'Service provider has accepted your booking',
         time: '10:00 AM',
       },
       {
         status: 'Vendor Out for Service',
-        date: 'Mon, Oct 02, 2023',
+        date: 'Mon, Oct 02, 2024',
         description: 'Service provider is on the way to your location',
         time: '09:00 AM',
       },
       {
         status: 'Service Completed',
-        date: 'Tue, Oct 03, 2023',
+        date: 'Tue, Oct 03, 2024',
         description: 'Service provider has completed the service',
         time: '12:00 AM',
       },
     ],
     paymentSummary: {
-      itemTotal: '$200',
-      discount: '$10',
+      itemTotal: '200 SAR',
+      discount: '10 SAR',
       deliveryFee: 'Free',
-      grandTotal: '$190',
+      grandTotal: '190 SAR',
     },
   };
   if (loading) {
