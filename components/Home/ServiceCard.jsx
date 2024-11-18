@@ -55,16 +55,17 @@ const ServiceCard = ({ service, cardWidth = 0.7, cardMargin = 16 }) => {
         </View>
         <View style={styles.providerContainer}>
           {/* Ensure freelancer and its pictureData exist */}
-          {service?.freelancer?.pictureData ? (
+          {service?.freelancer?.pictureData || service?.freelancerId?.pictureData ? (
             <Base64Image
-              base64String={service.freelancer.pictureData}
+              base64String={service?.freelancer?.pictureData || service?.freelancerId?.pictureData}
               style={styles.providerImage}
             />
           ) : (
             <Image source={{ uri: 'https://example.com/default_image.png' }} style={styles.providerImage} />
           )}
+
           {/* Ensure user and username exist */}
-          <Text style={styles.providerName}>{service?.user?.username || 'Unknown Provider'}</Text>
+          <Text style={styles.providerName}>{service?.user?.username || service?.username|| 'Unknown Provider'}</Text>
         </View>
         <TouchableOpacity style={styles.cartButton} onPress={handleAddToCart}>
           <Ionicons name="cart" size={24} color="#fff" />
