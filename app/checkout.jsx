@@ -26,7 +26,7 @@ const Checkout = () => {
         total: total
       };
 
-      const response = await axios.post(`${apiUrl}/api/appointment/create`, appointmentData);
+      const response = await axios.post(`${apiUrl}/api/appointment/create`, appointmentData);// send data to server
 
       setShowBookingConfirmation(true);
       console.log(response.data); // You can handle the response as needed
