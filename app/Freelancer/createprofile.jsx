@@ -197,6 +197,7 @@ const CreateProfileScreen = () => {
 
       // Make the API request
       const api = axios.create({ baseURL: REACT_APP_API_URL_NEW });
+
       const apiResponse = await api.post('/api/freelancer', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',

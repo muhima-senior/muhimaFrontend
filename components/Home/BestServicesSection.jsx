@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
-
 import ServiceCard from './ServiceCard';
 import { useRouter } from 'expo-router';
 import axios from 'axios';
 import { REACT_APP_API_URL_NEW } from '@env';
 
 const BestServicesSection = () => {
- 
   const router = useRouter();
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true); // Loading state
@@ -15,7 +13,7 @@ const BestServicesSection = () => {
   const handleSeeAll = () => {
     router.push({
       pathname: 'bestservicescreen',
-      params: { type: "best", title: "All Services", category: "None" },
+      params: { type: "best", title: "Best Services", category: "None" },
     });
   };
 
@@ -43,6 +41,11 @@ const BestServicesSection = () => {
           <Text style={styles.seeAll}>See All</Text>
         </TouchableOpacity>
       </View>
+
+
+
+
+      
       {loading ? ( // Show loading indicator while fetching services
         <ActivityIndicator size="large" color="#4A90E2" />
       ) : services.length > 0 ? ( // Render FlatList only if services are populated

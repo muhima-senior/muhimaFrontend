@@ -16,9 +16,9 @@ import {
   MapPin,
   Share2
 } from 'lucide-react-native';
-import { useRouter, Stack } from "expo-router";
+import { useRouter, Stack, useLocalSearchParams } from "expo-router";
 import axios from 'axios';
-import { useRoute } from '@react-navigation/native';
+// import { useRoute } from '@react-navigation/native';
 import { REACT_APP_API_URL_NEW } from '@env';
 import { COLORS } from '../constants/theme';
 import Base64Image from '@/components/Base64Image';
@@ -34,19 +34,20 @@ const ActionButton = ({ icon, label }) => (
 
 const ServiceDetailScreen = () => {
   const router = useRouter();
-  const route = useRoute();
+  // const route = useRoute();
 
   // States
   const [serviceId, setServiceId] = useState(null);
   const [service, setService] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  
+  const { service_id } = useLocalSearchParams();
+  
   // Fetch the service_id from route params when the component mounts
   useEffect(() => {
-    if (route.params?.service_id) {
-      setServiceId(route.params.service_id);  // Set service_id once from route params
-    }
-  }, [route.params]);
+    setServiceId(service_id)
+    console.log(service_id)
+  }, []);
 
   // Fetch service details using the serviceId
   const getServiceDetails = async () => {
@@ -71,7 +72,7 @@ const ServiceDetailScreen = () => {
     router.push({
       pathname: 'bookingsummary',
       params: {
-        service_id: service._id,
+        serviceId: service._id,
         // service: JSON.stringify(service),
       },
     });
@@ -87,7 +88,7 @@ const ServiceDetailScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {}
+      {/* Removed <Stack.Screen> */}
       <Stack.Screen
         options={{
           headerShadowVisible: false,

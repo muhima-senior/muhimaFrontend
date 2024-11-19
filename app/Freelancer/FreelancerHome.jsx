@@ -11,12 +11,12 @@ import Base64Image from '../../components/Base64Image';
 
 const FreelancerHomePage = () => {
   const router = useRouter();
- 
+  const [freelancer, setFreelancer] = useState(null)
   const [upcomingBookings, setUpcomingBookings] = useState(3);
   const [unreadMessages, setUnreadMessages] = useState(2);
   const [earnings, setEarnings] = useState(1250.00);
   const [services, setServices] = useState([]);
-  const { user,userId, setUserId } = useGlobalStore();
+  const { userId, setUserId, user } = useGlobalStore();
 
   const handleEditProfile = () => {
     router.push('EditProfileScreen');
@@ -39,7 +39,7 @@ const FreelancerHomePage = () => {
   };
 
   const handleReviews = () => {
-    router.push('ReviewsScreen');
+    router.push('Freelancer/viewreviews');
   };
 
   const handleAddService = () => {
@@ -48,7 +48,6 @@ const FreelancerHomePage = () => {
 
   const getServices = async () => {
     try {
-      console.log(userId)
       const response = await axios.get(`${REACT_APP_API_URL_NEW}/api/service/freelancer/${userId}`);
       setServices(response.data);
     } catch (error) {
@@ -56,9 +55,20 @@ const FreelancerHomePage = () => {
       throw error;
     }
   };
-
+  
+  const getFreelancerData = async () => {
+    try {
+      const response = await axios.get(`${REACT_APP_API_URL_NEW}/api/freelancer/user/${userId}`);
+      setFreelancer(response.data);
+    } catch (error) {
+      console.error('Error fetching services:', error);
+      throw error;
+    }
+  };
+ 
   useEffect(() => {
     getServices();
+    getFreelancerData();
   }, []);
 
   return (
@@ -76,17 +86,17 @@ const FreelancerHomePage = () => {
           <Text style={styles.headerName}>{user}</Text>
         </View>
         <TouchableOpacity onPress={handleEditProfile}>
-          <Image
-            source={{ uri: 'https://global.discourse-cdn.com/flex020/uploads/slicer/original/3X/9/2/921ebe55412a0dddda5037675e52d62e70246f74.png' }}
+          <Base64Image
+            base64String={freelancer.pictureData}
             style={styles.profilePic}
-          />     
+          />
         </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.cardContainer}>
           <StatCard value={upcomingBookings} label="Upcoming Bookings" icon="calendar" />
-          <StatCard value={`SAR${earnings}`} label="Earnings" icon="cash" />
+          <StatCard value={`$${earnings}`} label="Earnings" icon="cash" />
         </View>
 
         <Text style={styles.sectionTitle}>Quick Actions</Text>

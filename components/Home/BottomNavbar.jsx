@@ -18,18 +18,24 @@ const BottomNavBar = () => {
     if (tab.name === 'Bookings') {
       router.push({
         pathname: 'mybooking',
-        params: { type: 'homeowner' },
-      });    } else {
-      // Handle other tab navigations here if necessary
+        params: { type: 'homeowner' }, // Changed from 'params' to 'query' for query parameters
+      });
+    } 
+    else if (tab.name === 'Categories') {
+      router.push("categories");
     }
+    // Handle other tab navigations here if necessary
   };
+  
 
+  
+  
   return (
     <View style={styles.container}>
       {tabs.map((tab, index) => (
         <TouchableOpacity key={index} style={styles.tab} onPress={() => handlePress(tab)}>
-          <tab.icon color={tab.name === 'Categories' ? '#4A90E2' : '#999'} size={24} />
-          <Text style={[styles.tabText, tab.name === 'Categories' && styles.activeTabText]}>
+          <tab.icon color={tab.name === 'Home' ? '#4A90E2' : '#999'} size={24} />
+          <Text style={[styles.tabText, tab.name === 'Home' && styles.activeTabText]}>
             {tab.name}
           </Text>
         </TouchableOpacity>

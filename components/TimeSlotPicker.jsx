@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from "expo-router";
 
 const TimeSlotPicker = ({ availableSlots, quantity, total, serviceId }) => {
-  const navigation = useNavigation();
 
   const [selectedDay, setSelectedDay] = useState('monday');
   const [selectedSlots, setSelectedSlots] = useState([]);
@@ -11,6 +10,7 @@ const TimeSlotPicker = ({ availableSlots, quantity, total, serviceId }) => {
 
   const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
   const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const router = useRouter();
 
   // Generate upcoming dates for the next month
   useEffect(() => {
@@ -53,16 +53,20 @@ const TimeSlotPicker = ({ availableSlots, quantity, total, serviceId }) => {
     return selectedSlots.filter(slot => slot.day === day).length;
   };
 
-  const proceedToCheckout = () => {
-    const checkoutData = {
-      serviceId,
-      total,
-      selectedSlots,
-      quantity,
-    };
-    navigation.navigate('checkout', checkoutData);
+const proceedToCheckout = () => {
+  const checkoutData = {
+    serviceId,
+    total,
+    selectedSlots: JSON.stringify(selectedSlots), // Serialize complex data
+    quantity,
   };
+  router.push({
+    pathname: '/checkout',
+    params: checkoutData,
+  });
+};
 
+  
   return (
     <View style={styles.container}>
       {/* Select Date */}

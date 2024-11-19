@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Button, Alert } from 'react-native';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 import { useGlobalStore } from './store/GlobalStore';
 import axios from 'axios';
 import BookingConfirmation from '../components/BookingConfirmation';
@@ -9,23 +9,23 @@ import BookingConfirmation from '../components/BookingConfirmation';
 const apiUrl = process.env.REACT_APP_API_URL_NEW;
 
 const Checkout = () => {
-  const route = useRoute();
-  const navigation = useNavigation();
+  const route = useRouter();
   const { userId, setUserId } = useGlobalStore();
   const [showBookingConfirmation, setShowBookingConfirmation] = useState(false);
 
-  const { serviceId, total, selectedSlots, quantity } = route.params;
-
+  const { serviceId, total, selectedSlots, quantity } = useLocalSearchParams();
+  const slots = selectedSlots ? JSON.parse(selectedSlots) : [];
+  
   const handleCreateAppointment = async () => {
     try {
       const appointmentData = {
         gigId: serviceId,
         userId: userId,
-        appointmentDates: selectedSlots,
+        appointmentDates: slots,
         quantity: quantity,
         total: total
       };
-
+      console.log("Apointment data: ",appointmentData)
       const response = await axios.post(`${apiUrl}/api/appointment/create`, appointmentData);
 
       setShowBookingConfirmation(true);
@@ -38,7 +38,7 @@ const Checkout = () => {
 
   const handleDone = () => {
     setShowBookingConfirmation(false);
-    navigation.navigate('home');
+    route.push('home');
   };
 
   return (
@@ -50,7 +50,7 @@ const Checkout = () => {
       <Text style={styles.info}>Userid: {userId}</Text>
 
       <Text style={styles.slotsHeader}>Selected Slots:</Text>
-      {selectedSlots.map((slot, index) => (
+      {slots.map((slot, index) => (
         <Text key={index} style={styles.slot}>
           {slot.day}, {slot.date}: {slot.time}
         </Text>

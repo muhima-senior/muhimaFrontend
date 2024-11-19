@@ -1,31 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { Stack, useRouter } from "expo-router";
-import { useRoute } from '@react-navigation/native';
+import { ArrowLeft, Star } from 'lucide-react-native';
+import FrequentlyAddedTogether from '../components/FrequentlyAddedTogether/FrequentlyAddedTogether';
+import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 import axios from 'axios';
 import { REACT_APP_API_URL_NEW } from '@env';
 import Base64Image from '@/components/Base64Image';
-import TimeSlotPicker from '../components/TimeSlotPicker'
+import TimeSlotPicker from '../components/TimeSlotPicker';
+import { COLORS } from '../constants/theme';
 
-const FREQUENTLY_ADDED_SERVICES = [
-  {
-    image: "https://via.placeholder.com/80",
-    title: "Complete Kitchen Cleaning",
-    rating: { value: 5, reviews: 130 },
-    price: 150,
-    oldPrice: 180,
-    providerName: "Mark Willions"
-  },
-  {
-    image: "https://via.placeholder.com/80",
-    title: "AC Service",
-    rating: { value: 5, reviews: 0 },
-    price: 50,
-    oldPrice: 80,
-    providerName: "Jacob Jones"
-  }
-];
+
 
 const COUPON_BUTTON_TEXT = 'Apply Coupon';
 
@@ -33,22 +17,23 @@ const BookingSummaryScreen = () => {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const [service, setService] = useState(null);
-
-  const router = useRouter();
-  const route = useRoute();
-  const serviceId = route.params?.service_id || null;
   const [isPickerVisible, setIsPickerVisible] = useState(false);
 
+  const router = useRouter();
+  const {serviceId} = useLocalSearchParams();
+  console.log("Booking summary: ",serviceId)
+
   const handleSelectSlotPress = () => {
-    setIsPickerVisible(true); // Show the TimeSlotPicker when button is clicked
+    setIsPickerVisible(true);
   };
 
   const handleClosePicker = () => {
-    setIsPickerVisible(false); // Hide the TimeSlotPicker when done
+    setIsPickerVisible(false);
   };
+
   useEffect(() => {
     if (serviceId) {
-      getServiceDetails(serviceId);  // Fetch service details when serviceId is available
+      getServiceDetails(serviceId);
     }
   }, [serviceId]);
 
@@ -73,9 +58,16 @@ const BookingSummaryScreen = () => {
   };
 
   const itemTotal = service ? service.price * quantity : 0;
-  const discount = 10; // You can adjust this or calculate based on some logic
-  const deliveryFee = 'Free'; // Assuming delivery is always free
-  const grandTotal = itemTotal - discount; // Calculate grand total
+  const discount = 10;
+  const deliveryFee = 'Free';
+  const grandTotal = itemTotal - discount;
+
+  const StarRating = ({ rating, reviews }) => (
+    <View style={styles.ratingContainer}>
+      <Star color="#FFD700" fill="#FFD700" size={20} />
+      <Text style={styles.ratingText}>{rating} ({reviews} reviews)</Text>
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -88,17 +80,22 @@ const BookingSummaryScreen = () => {
 
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
-          <Icon name="arrow-back" size={24} color="#000" />
+          <ArrowLeft color="#000" size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Booking Summary</Text>
+        <View style={{ width: 24 }} />
       </View>
 
       {loading ? (
         <View style={styles.loader}>
-          <ActivityIndicator size="large" color="#007AFF" />
+          <ActivityIndicator size="large" color={COLORS.primary} />
         </View>
       ) : (
-        <ScrollView contentContainerStyle={styles.scrollContent}>
+        <ScrollView 
+          contentContainerStyle={styles.scrollContent}
+          contentInset={{ bottom: 90 }}
+          contentInsetAdjustmentBehavior="automatic"
+        >
           <View style={styles.mainService}>
             {service?.pictureData ? (
               <Base64Image
@@ -114,12 +111,20 @@ const BookingSummaryScreen = () => {
               <StarRating rating={5} reviews={service?.reviewCount} />
               <View style={styles.quantityContainer}>
                 <Text style={styles.mainServicePrice}>SAR {itemTotal.toFixed(2)}</Text>
-                <View style={styles.quantityControls}>
-                  <TouchableOpacity style={styles.quantityButton} onPress={handleDecrease}>
+                <View style={styles.quantityControlsWrapper}>
+                  <TouchableOpacity 
+                    style={styles.quantityButton} 
+                    onPress={handleDecrease}
+                  >
                     <Text style={styles.quantityButtonText}>-</Text>
                   </TouchableOpacity>
-                  <Text style={styles.quantityText}>{quantity}</Text>
-                  <TouchableOpacity style={styles.quantityButton} onPress={handleIncrease}>
+                  <View style={styles.quantityTextContainer}>
+                    <Text style={styles.quantityText}>{quantity}</Text>
+                  </View>
+                  <TouchableOpacity 
+                    style={styles.quantityButton} 
+                    onPress={handleIncrease}
+                  >
                     <Text style={styles.quantityButtonText}>+</Text>
                   </TouchableOpacity>
                 </View>
@@ -127,12 +132,10 @@ const BookingSummaryScreen = () => {
             </View>
           </View>
 
-          {/* <FrequentlyAddedTogether services={FREQUENTLY_ADDED_SERVICES} /> */}
-
           <TouchableOpacity style={styles.couponButton}>
-            <Icon name="pricetag-outline" size={24} color="#007AFF" />
+            <ArrowLeft color={COLORS.primary} size={24} />
             <Text style={styles.couponButtonText}>{COUPON_BUTTON_TEXT}</Text>
-            <Icon name="chevron-forward" size={24} color="#000" />
+            <ArrowLeft color="#000" size={24} />
           </TouchableOpacity>
 
           <View style={styles.summaryContainer}>
@@ -155,70 +158,68 @@ const BookingSummaryScreen = () => {
           </View>
 
           <View style={styles.addressContainer}>
-            <Icon name="location-outline" size={24} color="#007AFF" />
+            <ArrowLeft size={24} color={COLORS.primary} />
             <View style={styles.addressTextContainer}>
               <Text style={styles.addressLabel}>Address</Text>
-              <Text style={styles.addressText}>3125 Almalqa, Riyadh</Text>
+              <Text style={styles.addressText}>2118 Thornridge California</Text>
             </View>
             <TouchableOpacity>
               <Text style={styles.changeText}>Change</Text>
             </TouchableOpacity>
           </View>
+
+          {/* Optional: Frequently Added Together Section */}
+    
         </ScrollView>
       )}
 
-        <View style={styles.bottomContainer}>
+      <View style={styles.bottomTabContainer}>
+        <View style={styles.bottomTabContent}>
           <View style={styles.priceContainer}>
             <Text style={styles.bottomPrice}>SAR {grandTotal.toFixed(2)}</Text>
-            <Text style={styles.viewDetails}>View Details</Text>
-          </View>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.selectSlotButton} onPress={handleSelectSlotPress}>
-              <Text style={styles.selectSlotButtonText}>Select Slot</Text>
+            <TouchableOpacity>
+              <Text style={styles.viewDetails}>View Details</Text>
             </TouchableOpacity>
           </View>
+          <TouchableOpacity 
+            style={styles.selectSlotButton} 
+            onPress={handleSelectSlotPress}
+          >
+            <Text style={styles.selectSlotButtonText}>Select Slot</Text>
+          </TouchableOpacity>
+        </View>
       </View>
+
       {isPickerVisible && (
-            <TimeSlotPicker 
-              availableSlots={service.freelancer.availableSlots}
-              quantity={quantity}
-              total = {grandTotal}
-              serviceId = {serviceId}
-              onClose={handleClosePicker} 
-            />
-          )}
+        <TimeSlotPicker 
+          availableSlots={service?.freelancer?.availableSlots}
+          quantity={quantity}
+          total={grandTotal}
+          serviceId={serviceId}
+          onClose={handleClosePicker} 
+        />
+      )}
     </SafeAreaView>
   );
 };
 
-const StarRating = ({ rating, reviews }) => (
-  <View style={styles.ratingContainer}>
-    <Icon name="star" size={20} color="#FFD700" />
-    <Text style={styles.ratingText}>{rating} ({reviews} reviews)</Text>
-  </View>
-);
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f4f4f4',
-  },
-  header: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
     backgroundColor: '#fff',
-    padding: 16,
+  },
+header: {
     flexDirection: 'row',
     alignItems: 'center',
-    elevation: 4,
-    zIndex: 10,
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
   },
   headerTitle: {
+    flex: 1,
+    textAlign: 'center',
     fontSize: 18,
     fontWeight: 'bold',
-    marginLeft: 16,
   },
   loader: {
     flex: 1,
@@ -226,20 +227,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   scrollContent: {
-    paddingTop: 80,
-    paddingBottom: 80,
+    paddingBottom: 120,
   },
   mainService: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     margin: 16,
-    borderRadius: 8,
+    borderRadius: 12,
     overflow: 'hidden',
-    elevation: 2,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
   },
   mainServiceImage: {
-    width: 100,
-    height: 100,
+    width: 120,
+    height: 120,
+    backgroundColor: '#EAEAEA',
   },
   mainServiceDetails: {
     flex: 1,
@@ -248,162 +253,13 @@ const styles = StyleSheet.create({
   mainServiceTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: '#333333',
     marginBottom: 8,
   },
   mainServiceDescription: {
     fontSize: 14,
-    color: '#666',
+    color: '#666666',
     marginBottom: 8,
-  },
-  quantityContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  mainServicePrice: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  quantityControls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  quantityButton: {
-    width: 30,
-    height: 30,
-    backgroundColor: '#ddd',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 5,
-  },
-  quantityButtonText: {
-    fontSize: 18,
-  },
-  quantityText: {
-    fontSize: 18,
-    marginHorizontal: 10,
-  },
-  couponButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    margin: 16,
-    padding: 16,
-    borderRadius: 8,
-    elevation: 2,
-  },
-  couponButtonText: {
-    flex: 1,
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginLeft: 10,
-  },
-  summaryContainer: {
-    backgroundColor: '#fff',
-    margin: 16,
-    padding: 16,
-    borderRadius: 8,
-    elevation: 2,
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  summaryLabel: {
-    fontSize: 16,
-    color: '#666',
-  },
-  summaryValue: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  freeText: {
-    color: 'green',
-  },
-  totalRow: {
-    marginTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#ddd',
-    paddingTop: 10,
-  },
-  totalLabel: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  totalValue: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  addressContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    margin: 16,
-    padding: 16,
-    borderRadius: 8,
-    elevation: 2,
-  },
-  addressTextContainer: {
-    flex: 1,
-    marginLeft: 10,
-  },
-  addressLabel: {
-    fontSize: 16,
-    color: '#666',
-  },
-  addressText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  changeText: {
-    color: '#007AFF',
-  },
-  bottomContainer: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: '#fff',
-    padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#ddd',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    elevation: 4,
-  },
-  priceContainer: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-  },
-  bottomPrice: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  viewDetails: {
-    fontSize: 14,
-    color: '#666',
-    marginLeft: 10,
-  },
-  selectSlotButton: {
-    paddingVertical: 10,  // Reduce vertical padding if needed
-    paddingHorizontal: 10, // Keep minimal horizontal padding
-    backgroundColor: '#007aff',
-    borderRadius: 8,
-    alignItems: 'center',  // Center text horizontally
-    justifyContent: 'center', // Center text vertically
-    alignSelf: 'center', // Ensures the button doesn’t stretch in a flex container
-    minWidth: 80,  // Set a minimum width if needed to control button size
-  },
-  selectSlotButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center', // Ensures text is centered within the Text component
-  },
-  buttonContainer:{
-
   },
   ratingContainer: {
     flexDirection: 'row',
@@ -411,10 +267,207 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   ratingText: {
-    fontSize: 16,
-    color: '#FFD700',
+    fontSize: 14,
+    color: '#666666',
     marginLeft: 4,
   },
-});
+  quantityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 8,
+  },
+  quantityControlsWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5',
+    borderRadius: 8,
+    padding: 4,
+  },
+  quantityButton: {
+    width: 32,
+    height: 32,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+  },
+  quantityButtonText: {
+    fontSize: 18,
+    color: COLORS.primary,
+    fontWeight: '600',
+  },
+  quantityTextContainer: {
+    width: 40,
+    alignItems: 'center',
+  },
+  quantityText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333333',
+  },
+  mainServicePrice: {
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: COLORS.primary,
+  },
+  couponButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    margin: 16,
+    padding: 16,
+    borderRadius: 12,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 1 },
+  },
+  couponButtonText: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.primary,
+    marginLeft: 10,
+  },
+  summaryContainer: {
+    backgroundColor: '#FFFFFF',
+    margin: 16,
+    padding: 16,
+    borderRadius: 12,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 1 },
+  },
+  summaryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  summaryLabel: {
+    fontSize: 15,
+    color: '#666666',
+  },
+  summaryValue: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#333333',
+  },
+  freeText: {
+    color: '#4CAF50',
+  },
+  totalRow: {
+    marginTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#EAEAEA',
+    paddingTop: 12,
+  },
+  totalLabel: {
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: '#333333',
+  },
+  totalValue: {
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: COLORS.primary,
+  },
+  addressContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    margin: 16,
+    padding: 16,
+    borderRadius: 12,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 1 },
+  },
+  addressTextContainer: {
+    flex: 1,
+    marginLeft: 10,
+  },
+  addressLabel: {
+    fontSize: 14,
+    color: '#666666',
+  },
+  addressText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333333',
+    marginTop: 4,
+  
+  },
+  changeText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: COLORS.primary,
+  },
+  bottomTabContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#FFFFFF',
+    borderTopWidth: 1,
+    borderTopColor: '#EAEAEA',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
 
+  bottomTabContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    backgroundColor: '#FFFFFF',
+  },
+
+  priceContainer: {
+    flex: 1,
+    marginRight: 16,
+  },
+
+  bottomPrice: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: COLORS.primary,
+    marginBottom: 4,
+  },
+
+  viewDetails: {
+    fontSize: 14,
+    color: '#666666',
+    textDecorationLine: 'underline',
+  },
+
+  selectSlotButton: {
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    backgroundColor: COLORS.primary,
+    borderRadius: 8,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+
+  selectSlotButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});
 export default BookingSummaryScreen;

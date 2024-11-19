@@ -7,7 +7,7 @@ const Header = ({ username, navigation, route }) => {
     <View style={styles.header}>
       <View style={styles.userInfo}>
         <Image
-          source={{ uri: 'https://img.freepik.com/free-photo/young-beautiful-woman-pink-warm-sweater-natural-look-smiling-portrait-isolated-long-hair_285396-896.jpg' }}
+          source={{ uri: 'https://userphotos2.teacheron.com/835322-95145.jpeg' }}
           style={styles.avatar}
         />
         <Text style={styles.username}>{username}</Text>
@@ -24,8 +24,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
-    marginBottom: 10,  // Add a bottom margin to separate it from the SearchBar
+    padding: 10,
+    marginBottom: 5,  // Add a bottom margin to separate it from the SearchBar
   },
   userInfo: {
     flexDirection: 'row',

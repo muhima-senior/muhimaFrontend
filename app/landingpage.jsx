@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView, Dimensions } from 'react-native';
 import { Stack, useRouter } from "expo-router";
 import { useGlobalStore } from './store/GlobalStore';
-import { COLORS, FONT, SIZES, SHADOWS } from '../constants/theme';
 
 const { width, height } = Dimensions.get('window');
 
@@ -92,7 +91,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: '#4169E1',
     borderRadius: width * 0.08,
     paddingVertical: height * 0.02,
     paddingHorizontal: width * 0.1,
@@ -109,7 +108,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   freelancerLink: {
-    color: COLORS.primary,
+    color: '#4169E1',
     fontSize: width * 0.04,
     textDecorationLine: 'underline',
   },

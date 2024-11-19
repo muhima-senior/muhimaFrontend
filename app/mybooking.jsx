@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View,  SafeAreaView, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
 import { REACT_APP_API_URL_NEW } from '@env';
-import { useRoute } from '@react-navigation/native';
 import { useGlobalStore } from './store/GlobalStore';
-import { useRouter, Stack } from "expo-router";
-
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { ArrowLeft, Star } from 'lucide-react-native';
+import { SafeAreaFrameContext } from 'react-native-safe-area-context';
 
 const BookingCard = ({ item }) => {
 
@@ -48,11 +48,10 @@ const BookingCard = ({ item }) => {
 const BookingsScreen = () => {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
-    const route = useRoute();
     const { userId } = useGlobalStore();
 
-    const { title, type, category , id } = route.params; 
-
+    const { title, type, category , id } = useLocalSearchParams(); 
+    const router = useRouter();
     const getBookings = async () => {
         try {
     
@@ -81,26 +80,41 @@ const BookingsScreen = () => {
       }, [type, category]);
 
     return (
-        <ScrollView style={styles.container}>
-            <Text style={styles.heading}>My Bookings</Text>
+        <SafeAreaView style={styles.container}>
+        <ScrollView >
+             <View style={styles.header}>
+            <TouchableOpacity onPress={() => router.back()}>
+            <ArrowLeft color="#000" size={24} />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>My Bookings</Text>
+            <View style={{ width: 24 }} />
+        </View>
             {bookings.map((item, index) => (
                 <BookingCard key={index} item={item} />
             ))}
         </ScrollView>
+  </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#fff',
+      },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
         padding: 16,
-        backgroundColor: '#f8f9fa',
-    },
-    heading: {
-        fontSize: 24,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ddd',
+      },
+      headerTitle: {
+        flex: 1,
+        textAlign: 'center',
+        fontSize: 18,
         fontWeight: 'bold',
-        marginBottom: 16,
-    },
+      },
     card: {
         backgroundColor: '#fff',
         borderRadius: 12,

@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
-
 import { router } from "expo-router";
 import { Ionicons } from '@expo/vector-icons'; // Import Ionicons for the cart icon
 import Base64Image from '../../components/Base64Image';
@@ -11,7 +10,6 @@ const { width: screenWidth } = Dimensions.get('window');
 const ServiceCard = ({ service, cardWidth = 0.7, cardMargin = 16 }) => {
 
   // Handle navigation to the service details screen
-  
   const handleSeeAll = () => {
     console.log("Service selected")
     router.push({
@@ -65,7 +63,7 @@ const ServiceCard = ({ service, cardWidth = 0.7, cardMargin = 16 }) => {
           )}
 
           {/* Ensure user and username exist */}
-          <Text style={styles.providerName}>{service?.user?.username || service?.username|| 'Unknown Provider'}</Text>
+          <Text style={styles.providerName}>{service?.user?.username || service?.username || 'Unknown Provider'}</Text>
         </View>
         <TouchableOpacity style={styles.cartButton} onPress={handleAddToCart}>
           <Ionicons name="cart" size={24} color="#fff" />

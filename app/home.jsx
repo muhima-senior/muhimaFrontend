@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SafeAreaView, FlatList, View, TouchableOpacity, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView ,FlatList,SafeAreaView} from 'react-native';
 import { Stack, useRouter } from "expo-router";
 import Header from "../components/Home/Header";
 import { COLORS, SIZES } from "../constants";
@@ -9,6 +9,7 @@ import BestServicesSection from "../components/Home/BestServicesSection";
 import BottomNavBar from "../components/Home/BottomNavbar";
 import { useGlobalStore } from './store/GlobalStore';
 
+
 const Home = () => {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,14 +17,7 @@ const Home = () => {
 
   const renderHeader = () => (
     <View style={{ padding: SIZES.medium }}>
-      {/* Navigate to Nearby screen */}
       <SearchBar />
-      <TouchableOpacity
-        style={styles.nearbyButton}
-        onPress={() => router.push("/nearby")}
-      >
-        <Text style={styles.nearbyButtonText}>Nearby Services</Text>
-      </TouchableOpacity>
       <CategoriesSection />
     </View>
   );
@@ -38,6 +32,7 @@ const Home = () => {
           headerTitle: "",
         }}
       />
+        <Header username={user}/>
       <FlatList
         data={[/* dummy data, if needed */]}
         renderItem={null} // Since we handle custom components, set this to null
@@ -51,25 +46,27 @@ const Home = () => {
     </SafeAreaView>
   );
 };
-
 const styles = StyleSheet.create({
-  nearbyButton: {
-    backgroundColor: '#4A90E2',
-    padding: SIZES.small,
-    borderRadius: SIZES.small,
-    marginBottom: SIZES.medium,
-    alignItems: 'center',
-    padding: 10,
-    maxWidth: 300,
-    alignItems: 'center',
-    alignSelf: 'left',
-    margin: 16,
-   },
-  nearbyButtonText: {
-    color: COLORS.white,
-    fontSize: SIZES.medium,
-    fontWeight: 'bold',
+  container: {
+      flex: 1,
+      padding: 16,
+      backgroundColor: '#f8f9fa',
   },
-});
-
+  header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 22,
+      backgroundColor: '#fff',
+      borderBottomWidth: 2,
+      borderBottomColor: '#EAEAEA',
+    },
+    headerTitle: {
+      flex: 2,
+      textAlign: 'center',
+      marginTop: 20,
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: '#333333',
+    },
+  });
 export default Home;

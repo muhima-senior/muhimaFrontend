@@ -9,6 +9,9 @@ import {
   Image,
   Alert,
   ActivityIndicator,
+  TextInput,
+  Animated,
+  Keyboard,
 } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -25,7 +28,21 @@ const NearbyFreelancersScreen = () => {
   const [loading, setLoading] = useState(false);
   const [searchRadius, setSearchRadius] = useState(5);
   const [markerPosition, setMarkerPosition] = useState(null);
+  const [showCoordinateInput, setShowCoordinateInput] = useState(false);
+  const [tempCoords, setTempCoords] = useState({ latitude: '', longitude: '' });
+  const [animation] = useState(new Animated.Value(0));
   const router = useRouter();
+
+  const toggleCoordinateInput = () => {
+    Keyboard.dismiss();
+    const newValue = !showCoordinateInput;
+    setShowCoordinateInput(newValue);
+    Animated.timing(animation, {
+      toValue: newValue ? 1 : 0,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  };
 
   const requestLocationPermission = async () => {
     setLoading(true);
@@ -45,6 +62,10 @@ const NearbyFreelancersScreen = () => {
       };
       setLocation(newLocation);
       setMarkerPosition(newLocation);
+      setTempCoords({
+        latitude: newLocation.latitude.toString(),
+        longitude: newLocation.longitude.toString(),
+      });
       await fetchNearbyFreelancers(newLocation.latitude, newLocation.longitude);
     } catch (error) {
       console.error('Error:', error);
@@ -63,8 +84,8 @@ const NearbyFreelancersScreen = () => {
         params: {
           latitude,
           longitude,
-          distance: searchRadius,
-        },
+          distance: searchRadius
+        }
       });
       console.log('API Response:', response.data);
       setFreelancers(response.data);
@@ -76,41 +97,71 @@ const NearbyFreelancersScreen = () => {
     }
   };
 
+  const updateCoordinates = async () => {
+    const newLat = parseFloat(tempCoords.latitude);
+    const newLng = parseFloat(tempCoords.longitude);
+    
+    if (isNaN(newLat) || isNaN(newLng)) {
+      Alert.alert('Invalid Coordinates', 'Please enter valid numbers');
+      return;
+    }
+
+    if (newLat < -90 || newLat > 90 || newLng < -180 || newLng > 180) {
+      Alert.alert('Invalid Coordinates', 'Coordinates out of valid range');
+      return;
+    }
+
+    const newPosition = {
+      ...markerPosition,
+      latitude: newLat,
+      longitude: newLng,
+    };
+
+    setMarkerPosition(newPosition);
+    await fetchNearbyFreelancers(newLat, newLng);
+    Keyboard.dismiss();
+  };
+
   useEffect(() => {
     requestLocationPermission();
   }, []);
 
   const handleFreelancerServices = (id) => {
-    console.log('Button clicked');
+    console.log("Button clicked");
     router.push({
-      pathname: 'bestservicescreen',
-      params: {
-        type: 'freelancer',
-        title: 'Nearby Services',
-        category: 'None',
-        freelanceId: id,
-      },
+        pathname: 'bestservicescreen',
+        params: { type: "freelancer", title: "Nearby Services", category: "None", freelanceId: id }, // Changed params to query
     });
-  };
+};
 
-  const renderFreelancerItem = ({ item }) => (
+const renderFreelancerItem = ({ item }) => (
     <TouchableOpacity
-      style={styles.freelancerCard}
-      onPress={() => handleFreelancerServices(item.userId)}
+        style={styles.freelancerCard}
+        onPress={() => handleFreelancerServices(item.userId)} // Wrap in an arrow function
     >
-      {item?.pictureData ? (
-        <Base64Image base64String={item.pictureData} style={styles.profilePicture} />
-      ) : (
-        <Text>No picture available</Text>
-      )}
-      <View style={styles.freelancerInfo}>
-        <Text style={styles.freelancerName}>
-          {item.profileDescription?.substring(0, 30)}...
-        </Text>
-        <Text style={styles.distanceText}>{Math.random().toFixed(1)} km away</Text>
-      </View>
+        {item?.pictureData ? (
+            <Base64Image
+                base64String={item.pictureData}
+                style={styles.profilePicture}
+            />
+        ) : (
+            <Text>No picture available</Text>
+        )}
+        <View style={styles.freelancerInfo}>
+            <Text style={styles.freelancerName}>
+                {item.profileDescription?.substring(0, 30)}...
+            </Text>
+            <Text style={styles.distanceText}>
+                {Math.random().toFixed(1)} km away
+            </Text>
+        </View>
     </TouchableOpacity>
-  );
+);
+
+  const inputHeight = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 180], // Increased height for better visibility
+  });
 
   return (
     <SafeAreaView style={styles.container}>
@@ -136,13 +187,21 @@ const NearbyFreelancersScreen = () => {
         <>
           {location && (
             <View style={styles.mapContainer}>
-              <MapView style={styles.map} initialRegion={location} region={markerPosition}>
+              <MapView 
+                style={styles.map} 
+                initialRegion={location}
+                region={markerPosition}
+              >
                 <Marker
                   coordinate={markerPosition}
                   draggable
                   onDragEnd={async (e) => {
                     const coords = e.nativeEvent.coordinate;
                     setMarkerPosition(coords);
+                    setTempCoords({
+                      latitude: coords.latitude.toString(),
+                      longitude: coords.longitude.toString(),
+                    });
                     await fetchNearbyFreelancers(coords.latitude, coords.longitude);
                   }}
                 />
@@ -152,7 +211,68 @@ const NearbyFreelancersScreen = () => {
                   fillColor="rgba(0, 128, 255, 0.2)"
                   strokeColor="rgba(0, 128, 255, 0.5)"
                 />
+                {/* {freelancers.map((freelancer) => (
+                  <Marker
+                    key={freelancer._id}
+                    coordinate={{
+                      latitude: freelancer.location.coordinates[1],
+                      longitude: freelancer.location.coordinates[0],
+                    }}
+                    title={freelancer.profileDescription}
+                    pinColor="red"
+                  />
+                ))} */}
               </MapView>
+
+              {/* <View style={styles.mapControls}>
+                <TouchableOpacity
+                  style={styles.controlButton}
+                  onPress={toggleCoordinateInput}
+                >
+                  <Ionicons 
+                    name={showCoordinateInput ? "chevron-up" : "location"} 
+                    size={24} 
+                    color="white" 
+                  />
+                  <Text style={styles.controlButtonText}>
+                    {showCoordinateInput ? "Hide Coordinates" : "Enter Coordinates"}
+                  </Text>
+                </TouchableOpacity>
+
+                <Animated.View style={[
+                  styles.coordinateInputContainer,
+                  { height: inputHeight }
+                ]}>
+                  <View style={styles.inputRow}>
+                    <View style={styles.inputWrapper}>
+                      <Text style={styles.inputLabel}>Latitude</Text>
+                      <TextInput
+                        style={styles.coordinateInput}
+                        value={tempCoords.latitude}
+                        onChangeText={(text) => setTempCoords(prev => ({ ...prev, latitude: text }))}
+                        keyboardType="numeric"
+                        placeholder="Enter latitude"
+                      />
+                    </View>
+                    <View style={styles.inputWrapper}>
+                      <Text style={styles.inputLabel}>Longitude</Text>
+                      <TextInput
+                        style={styles.coordinateInput}
+                        value={tempCoords.longitude}
+                        onChangeText={(text) => setTempCoords(prev => ({ ...prev, longitude: text }))}
+                        keyboardType="numeric"
+                        placeholder="Enter longitude"
+                      />
+                    </View>
+                  </View>
+                  <TouchableOpacity
+                    style={styles.updateButton}
+                    onPress={updateCoordinates}
+                  >
+                    <Text style={styles.buttonText}>Update Location</Text>
+                  </TouchableOpacity>
+                </Animated.View>
+              </View> */}
             </View>
           )}
 
@@ -164,6 +284,7 @@ const NearbyFreelancersScreen = () => {
               data={freelancers}
               renderItem={renderFreelancerItem}
               keyExtractor={(item) => item._id}
+              // contentContainerStyle={styles.listContainer}
               showsVerticalScrollIndicator={false}
             />
           </View>
@@ -193,6 +314,65 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 1,
+  },
+  mapControls: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'transparent',
+  },
+  controlButton: {
+    backgroundColor: COLORS.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: SIZES.medium, // Increased padding
+    borderTopLeftRadius: SIZES.small,
+    borderTopRightRadius: SIZES.small,
+  },
+  controlButtonText: {
+    color: 'white',
+    marginLeft: SIZES.xSmall,
+    fontWeight: 'bold',
+    fontSize: SIZES.medium, // Increased font size
+  },
+  coordinateInputContainer: {
+    backgroundColor: 'white',
+    padding: SIZES.xSmall,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.gray2,
+  },
+  inputRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: SIZES.medium, // Increased margin
+  },
+  inputWrapper: {
+    flex: 1,
+    marginHorizontal: SIZES.xSmall,
+  },
+  inputLabel: {
+    fontSize: SIZES.medium, // Increased font size
+    color: COLORS.gray,
+    marginBottom: 8, // Increased margin
+    fontWeight: '500',
+  },
+  coordinateInput: {
+    borderWidth: 1,
+    borderColor: COLORS.gray2,
+    borderRadius: SIZES.xSmall,
+    padding: SIZES.xSmall, // Increased padding
+    fontSize: SIZES.medium,
+    height: 45, // Explicit height
+  },
+  updateButton: {
+    backgroundColor: COLORS.primary,
+    padding: SIZES.xSmall, // Increased padding
+    borderRadius: SIZES.xSmall,
+    alignItems: 'center',
+    marginTop: SIZES.small,
+    height: 48, // Explicit height
   },
   resultContainer: {
     flex: 1,
@@ -233,6 +413,16 @@ const styles = StyleSheet.create({
   distanceText: {
     fontSize: SIZES.small,
     color: COLORS.gray,
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: SIZES.medium, // Increased font size
+  },
+  resultText: {
+    fontSize: SIZES.medium,
+    fontWeight: 'bold',
+    marginBottom: SIZES.small,
   },
 });
 

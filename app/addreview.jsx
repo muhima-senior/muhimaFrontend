@@ -1,92 +1,97 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
   TextInput,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   SafeAreaView,
-  Alert
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRoute } from '@react-navigation/native';
 import { REACT_APP_API_URL_NEW } from '@env';
-import { useRouter, Stack } from "expo-router";
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 
 const ReviewScreen = () => {
   const [rating, setRating] = useState(0);
   const [recommended, setRecommended] = useState(true);
   const [reviewText, setReviewText] = useState('');
-  const [appointmentId, setAppointmentId] = useState(null)
+  const [appointmentId, setAppointmentId] = useState(null);
   const router = useRouter();
-
-  const route = useRoute(); // Access the route params
+  const params = useLocalSearchParams(); // Used outside `useEffect` for readability
 
   useEffect(() => {
-    if (route.params?.appointmentId) {
-      setAppointmentId(route.params.appointmentId); // Extract appointmentId from params
+    if (params?.appointmentId) {
+      setAppointmentId(params.appointmentId);
     }
-    console.log(appointmentId)
-  }, [route.params]);
+  }, [params]);
 
   const renderStars = () => {
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <TouchableOpacity
-          key={i}
-          onPress={() => setRating(i)}
-          style={styles.starContainer}
-        >
-          <Ionicons
-            name={i <= rating ? 'star' : 'star-outline'}
-            size={32}
-            color="#007AFF"
-          />
-        </TouchableOpacity>
-      );
-    }
-    return stars;
+    return Array.from({ length: 5 }, (_, i) => (
+      <TouchableOpacity
+        key={i + 1}
+        onPress={() => setRating(i + 1)}
+        style={styles.starContainer}
+      >
+        <Ionicons
+          name={i + 1 <= rating ? 'star' : 'star-outline'}
+          size={32}
+          color="#007AFF"
+        />
+      </TouchableOpacity>
+    ));
   };
 
   const getRatingText = () => {
-    if (rating === 0) return 'Rate Your Service';
-    if (rating === 5) return 'My Service was Excellent';
-    if (rating === 4) return 'My Service was Good';
-    if (rating === 3) return 'My Service was Average';
-    if (rating === 2) return 'My Service was Poor';
-    return 'My Service was Terrible';
+    switch (rating) {
+      case 5:
+        return 'My Service was Excellent';
+      case 4:
+        return 'My Service was Good';
+      case 3:
+        return 'My Service was Average';
+      case 2:
+        return 'My Service was Poor';
+      case 1:
+        return 'My Service was Terrible';
+      default:
+        return 'Rate Your Service';
+    }
   };
 
-
   const handleSubmit = async () => {
+    if (!appointmentId) {
+      Alert.alert('Error', 'Invalid appointment. Please try again.');
+      return;
+    }
+
     const payload = {
       appointmentId,
       rating,
       comments: reviewText,
     };
-  
-    const url = `${REACT_APP_API_URL_NEW}/api/rating/addRating`;
-  
+
+    const url = REACT_APP_API_URL_NEW
+      ? `${REACT_APP_API_URL_NEW}/api/rating/addRating`
+      : 'http://localhost:3000/api/rating/addRating';
+
     console.log('Payload:', payload);
     console.log('URL:', url);
-  
+
     try {
       const response = await axios.post(url, payload, {
         headers: {
           'Content-Type': 'application/json',
         },
       });
-  
+
       console.log('Response Data:', response.data);
       Alert.alert('Success', 'Your review has been submitted successfully!');
-      router.push({
-        pathname: 'home',
-      });
+      router.push({ pathname: 'home' });
     } catch (error) {
       console.error('Error:', error.response || error.message);
       Alert.alert(
@@ -95,28 +100,28 @@ const ReviewScreen = () => {
       );
     }
   };
-   
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
           <Ionicons name="chevron-back" size={24} color="#000" />
         </TouchableOpacity>
         <Text style={styles.title}>Write a Review</Text>
       </View>
 
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
         <ScrollView style={styles.scrollView}>
           <Text style={styles.ratingText}>{getRatingText()}</Text>
-          
-          <View style={styles.starsContainer}>
-            {renderStars()}
-          </View>
-          
+
+          <View style={styles.starsContainer}>{renderStars()}</View>
+
           <View style={styles.reviewInputContainer}>
             <TextInput
               style={styles.reviewInput}
@@ -127,10 +132,10 @@ const ReviewScreen = () => {
               textAlignVertical="top"
             />
           </View>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             style={styles.recommendContainer}
-            onPress={() => setRecommended(!recommended)}
+            onPress={() => setRecommended((prev) => !prev)}
           >
             <View style={styles.checkbox}>
               {recommended && (
@@ -142,10 +147,10 @@ const ReviewScreen = () => {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[
-              styles.submitButton, 
-              { opacity: rating === 0 ? 0.5 : 1 }
+              styles.submitButton,
+              { opacity: rating === 0 ? 0.5 : 1 },
             ]}
             onPress={handleSubmit}
             disabled={rating === 0}
@@ -180,7 +185,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '600',
     textAlign: 'center',
-    marginRight: 24, // To offset the back button and center the title
+    marginRight: 24,
   },
   keyboardView: {
     flex: 1,

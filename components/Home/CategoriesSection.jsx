@@ -1,36 +1,33 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
-import { Zap, PaintBucket, Brush, Scissors, Snowflake, Droplet, Hammer, Flower } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 const categories = [
-  { id: '1', name: 'Electrician', icon: Zap },
-  { id: '2', name: 'Painter', icon: PaintBucket },
-  { id: '3', name: 'Cleaner', icon: Brush },
-  { id: '4', name: 'HairDresser', icon: Scissors },
-  { id: '5', name: 'AC Repair', icon: Snowflake },
-  { id: '6', name: 'Plumber', icon: Droplet },
-  { id: '7', name: 'Carpenter', icon: Hammer },
-  { id: '8', name: 'Gardener', icon: Flower },
+  { id: '1', name: 'Carpenter', icon: '🔧'},
+  { id: '2', name: 'Cleaner', icon: '🧹'},
+  { id: '3', name: 'Painter', icon: '🎨'},
+  { id: '4', name: 'Electrician', icon: '⚡' },
+  { id: '5', name: 'AC Repair', icon: '❄️'},
+  { id: '6', name: 'Plumber', icon: '🔧'},
+  { id: '7', name: "Men's Salon", icon: '💇' }
 ];
-
 
 const CategoryItem = ({ item, handleCategorySelection }) => (
   <TouchableOpacity
     style={styles.categoryItem}
-    onPress={() => handleCategorySelection(item.name)} // Pass a function to handle the press
+    onPress={() => handleCategorySelection(item.name)}
   >
     <View style={styles.iconContainer}>
-      <item.icon color="#4A90E2" size={24} />
+      <Text style={styles.iconText}>{item.icon}</Text>
     </View>
     <Text style={styles.categoryName}>{item.name}</Text>
+
   </TouchableOpacity>
 );
 
-
 const CategoriesSection = () => {
-
   const router = useRouter();
+  
   const handleCategorySelection = (categoryName) => {
     console.log("Category: ", categoryName)
     router.push({
@@ -38,12 +35,15 @@ const CategoriesSection = () => {
       params: { type: "category", title: `${categoryName} Services`, category: categoryName },
     });
   }
+  const handleSeeAll = () => {
+    router.push('categories'); // Navigate to the categories page
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>All Categories</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleSeeAll}>
           <Text style={styles.seeAll}>See All</Text>
         </TouchableOpacity>
       </View>
@@ -89,10 +89,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
   },
+  iconText: {
+    fontSize: 24,
+  },
   categoryName: {
     fontSize: 12,
     textAlign: 'center',
+    fontWeight: '500',
+    marginBottom: 2,
   },
+  servicesCount: {
+    fontSize: 10,
+    color: '#888',
+    textAlign: 'center',
+  }
 });
 
 export default CategoriesSection;
