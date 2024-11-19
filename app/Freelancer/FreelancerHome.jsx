@@ -10,16 +10,16 @@ import Base64Image from '../../components/Base64Image';
 
 
 const FreelancerHomePage = () => {
-  const router = useRouter();
+  const router = useRouter();//navigate between pages 
  
   const [upcomingBookings, setUpcomingBookings] = useState(3);
   const [unreadMessages, setUnreadMessages] = useState(2);
   const [earnings, setEarnings] = useState(1250.00);
   const [services, setServices] = useState([]);
-  const { user,userId, setUserId } = useGlobalStore();
+  const { user,userId, setUserId } = useGlobalStore();//file so data is shared in all components 
 
   const handleEditProfile = () => {
-    router.push('EditProfileScreen');
+    router.push('EditProfileScreen');//push-> to navigate to a specific screen in the app in this case, profile screen
   };
 
   const handleViewBookings = () => {
@@ -46,10 +46,10 @@ const FreelancerHomePage = () => {
     router.push('Freelancer/createservice');
   };
 
-  const getServices = async () => {
+  const getServices = async () => {// async-> synchroinization
     try {
       console.log(userId)
-      const response = await axios.get(`${REACT_APP_API_URL_NEW}/api/service/freelancer/${userId}`);
+      const response = await axios.get(`${REACT_APP_API_URL_NEW}/api/service/freelancer/${userId}`);// send request to api and waits or the server to respond before moving to the next line.
       setServices(response.data);
     } catch (error) {
       console.error('Error fetching services:', error);
@@ -58,7 +58,8 @@ const FreelancerHomePage = () => {
   };
 
   useEffect(() => {
-    getServices();
+    getServices();//If the server responds successfully, it updates the services state with the data returned from the server.
+
   }, []);
 
   return (
@@ -104,7 +105,7 @@ const FreelancerHomePage = () => {
           <Text style={styles.sectionTitle}>Your Services</Text>
           {services.map((service, index) => (
             <TouchableOpacity key={index} style={styles.serviceCard} onPress={() => { /* handleSeeAll */ }}>
-              <Base64Image
+              <Base64Image// image based size 
                 base64String={service.pictureData}
                 style={styles.serviceImage}
               />
