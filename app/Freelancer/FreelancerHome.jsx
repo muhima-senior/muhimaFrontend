@@ -19,7 +19,7 @@ const FreelancerHomePage = () => {
   const { userId, setUserId, user } = useGlobalStore();
 
   const handleEditProfile = () => {
-    router.push('EditProfileScreen');//push-> to navigate to a specific screen in the app in this case, profile screen
+    router.push('EditProfileScreen');
   };
 
   const handleViewBookings = () => {
@@ -96,7 +96,7 @@ const FreelancerHomePage = () => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.cardContainer}>
           <StatCard value={upcomingBookings} label="Upcoming Bookings" icon="calendar" />
-          <StatCard value={`$${earnings}`} label="Earnings" icon="cash" />
+          <StatCard value={`SAR${earnings}`} label="Earnings" icon="cash" />
         </View>
 
         <Text style={styles.sectionTitle}>Quick Actions</Text>
@@ -114,7 +114,7 @@ const FreelancerHomePage = () => {
           <Text style={styles.sectionTitle}>Your Services</Text>
           {services.map((service, index) => (
             <TouchableOpacity key={index} style={styles.serviceCard} onPress={() => { /* handleSeeAll */ }}>
-              <Base64Image// image based size 
+              <Base64Image
                 base64String={service.pictureData}
                 style={styles.serviceImage}
               />
