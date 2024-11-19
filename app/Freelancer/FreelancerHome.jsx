@@ -19,7 +19,7 @@ const FreelancerHomePage = () => {
   const { userId, setUserId, user } = useGlobalStore();
 
   const handleEditProfile = () => {
-    router.push('EditProfileScreen');
+    router.push('EditProfileScreen');//push-> to navigate to a specific screen in the app in this case, profile screen
   };
 
   const handleViewBookings = () => {
@@ -46,7 +46,7 @@ const FreelancerHomePage = () => {
     router.push('Freelancer/createservice');
   };
 
-  const getServices = async () => {
+  const getServices = async () => {// async-> synchroinization
     try {
       const response = await axios.get(`${REACT_APP_API_URL_NEW}/api/service/freelancer/${userId}`);
       setServices(response.data);
@@ -114,7 +114,7 @@ const FreelancerHomePage = () => {
           <Text style={styles.sectionTitle}>Your Services</Text>
           {services.map((service, index) => (
             <TouchableOpacity key={index} style={styles.serviceCard} onPress={() => { /* handleSeeAll */ }}>
-              <Base64Image
+              <Base64Image// image based size 
                 base64String={service.pictureData}
                 style={styles.serviceImage}
               />
