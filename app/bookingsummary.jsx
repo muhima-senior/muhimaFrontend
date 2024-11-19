@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native';
 import { ArrowLeft, Star } from 'lucide-react-native';
-import FrequentlyAddedTogether from '../components/FrequentlyAddedTogether/FrequentlyAddedTogether';
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 import axios from 'axios';
 import { REACT_APP_API_URL_NEW } from '@env';
