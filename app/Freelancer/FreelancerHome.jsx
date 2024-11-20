@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, StatusBar, ScrollView, Image } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+  StatusBar,
+  ScrollView,
+  Image,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from "expo-router";
 import { COLORS, FONT, SIZES } from '../../constants';
@@ -8,86 +17,79 @@ import { REACT_APP_API_URL_NEW } from '@env';
 import { useGlobalStore } from '../store/GlobalStore';
 import Base64Image from '../../components/Base64Image';
 
-
 const FreelancerHomePage = () => {
   const router = useRouter();
-  const [freelancer, setFreelancer] = useState(null)
-  const [upcomingBookings, setUpcomingBookings] = useState(3);
+  const [freelancerName, setFreelancerName] = useState("Zoha Mobin");
+  const [upcomingBookings, setUpcomingBookings] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(2);
-  const [earnings, setEarnings] = useState(1250.00);
+  const [earnings, setEarnings] = useState(0);
   const [services, setServices] = useState([]);
-  const { userId, setUserId, user } = useGlobalStore();
+  const { userId } = useGlobalStore();
 
-  const handleEditProfile = () => {
-    router.push('EditProfileScreen');
+  const getPendingBookings = async () => {
+    try {
+      const response = await axios.get(`${REACT_APP_API_URL_NEW}/api/appointment/freelancer/${userId}`);
+      setUpcomingBookings(response.data.length);
+    } catch (error) {
+      console.error('Error fetching pending bookings:', error);
+      setUpcomingBookings(0);
+    }
   };
 
-  const handleViewBookings = () => {
-    router.push('BookingsScreen');
+  const getBookingEarnings = async () => {
+    try {
+      const response = await axios.get(`${REACT_APP_API_URL_NEW}/api/appointment/freelancer/${userId}`);
+      const bookings = response.data; // assuming response.data is an array of bookings
+  
+      // Calculate total earnings
+      const totalEarnings = bookings.reduce((sum, booking) => sum + booking.total, 0);
+      setEarnings(totalEarnings);
+    } catch (error) {
+      console.error('Error fetching  Earnings:', error);
+      setEarnings(0); // Set earnings to 0 in case of error
+    }
   };
+  
 
-  const handleMessages = () => {
-    router.push('MessagesScreen');
-  };
-
-  const handleEarnings = () => {
-    router.push('EarningsScreen');
-  };
-
-  const handleAvailability = () => {
-    router.push('AvailabilityScreen');
-  };
-
-  const handleReviews = () => {
-    router.push('Freelancer/viewreviews');
-  };
-
-  const handleAddService = () => {
-    router.push('Freelancer/createservice');
-  };
-
-  const getServices = async () => {// async-> synchroinization
+  const getServices = async () => {
     try {
       const response = await axios.get(`${REACT_APP_API_URL_NEW}/api/service/freelancer/${userId}`);
       setServices(response.data);
     } catch (error) {
       console.error('Error fetching services:', error);
-      throw error;
+      setServices([]);
     }
   };
-  
-  const getFreelancerData = async () => {
-    try {
-      const response = await axios.get(`${REACT_APP_API_URL_NEW}/api/freelancer/user/${userId}`);
-      setFreelancer(response.data);
-    } catch (error) {
-      console.error('Error fetching services:', error);
-      throw error;
-    }
-  };
- 
+
   useEffect(() => {
-    getServices();
-    getFreelancerData();
-  }, []);
+    if (userId) {
+      getPendingBookings();
+      getServices();
+      getBookingEarnings();
+    }
+  }, [userId]);
+
+  const handleEditProfile = () => router.push('EditProfileScreen');
+  const handleViewBookings = () => router.push('Freelancer/viewbookings');
+  const handleMessages = () => router.push('MessagesScreen');
+  const handleEarnings = () => router.push('EarningsScreen');
+  const handleAvailability = () => router.push('AvailabilityScreen');
+  const handleReviews = () => router.push('Freelancer/viewreviews');
+  const handleAddService = () => router.push('Freelancer/createservice');
 
   return (
     <SafeAreaView style={styles.container}>
-      <Stack.Screen
-        options={{
-          headerShadowVisible: false,
-          headerShown: false,
-        }}
-      />
+      <Stack.Screen options={{ headerShadowVisible: false, headerShown: false }} />
       <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
+
       <View style={styles.header}>
         <View>
           <Text style={styles.headerGreeting}>Welcome back,</Text>
-          <Text style={styles.headerName}>{user}</Text>
+          <Text style={styles.headerName}>{freelancerName}</Text>
         </View>
         <TouchableOpacity onPress={handleEditProfile}>
-          <Base64Image
-            base64String={freelancer.pictureData}
+          <Image
+            source={{ uri: 'https://userphotos2.teacheron.com/835322-95145.jpeg' }}
             style={styles.profilePic}
           />
         </TouchableOpacity>
@@ -96,7 +98,7 @@ const FreelancerHomePage = () => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.cardContainer}>
           <StatCard value={upcomingBookings} label="Upcoming Bookings" icon="calendar" />
-          <StatCard value={`SAR${earnings}`} label="Earnings" icon="cash" />
+          <StatCard value={`SAR ${earnings}`} label="Earnings" icon="cash" />
         </View>
 
         <Text style={styles.sectionTitle}>Quick Actions</Text>
@@ -107,17 +109,13 @@ const FreelancerHomePage = () => {
           <ActionButton icon="time-outline" text="Set Availability" onPress={handleAvailability} />
           <ActionButton icon="add-circle-outline" text="+ Add Service" onPress={handleAddService} fullWidth />
         </View>
-
         <ActionButton icon="star-outline" text="Reviews" onPress={handleReviews} fullWidth />
 
         <View style={styles.servicesContainer}>
           <Text style={styles.sectionTitle}>Your Services</Text>
           {services.map((service, index) => (
-            <TouchableOpacity key={index} style={styles.serviceCard} onPress={() => { /* handleSeeAll */ }}>
-              <Base64Image
-                base64String={service.pictureData}
-                style={styles.serviceImage}
-              />
+            <TouchableOpacity key={index} style={styles.serviceCard}>
+              <Base64Image base64String={service.pictureData} style={styles.serviceImage} />
               <View style={styles.serviceContent}>
                 <Text style={styles.serviceTitle}>{service.title}</Text>
                 <View style={styles.serviceDetails}>
