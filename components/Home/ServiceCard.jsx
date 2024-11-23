@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'rea
 import { router } from "expo-router";
 import { Ionicons } from '@expo/vector-icons'; // Import Ionicons for the cart icon
 import Base64Image from '../../components/Base64Image';
-
+import { COLORS } from '../../constants/theme';
 // Get screen width
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -18,12 +18,15 @@ const ServiceCard = ({ service, cardWidth = 0.7, cardMargin = 16 }) => {
     });
   };
 
-  // Handle adding the service to the cart
   const handleAddToCart = () => {
-    // Logic to add service to cart
-    router.push('bookingsummary');
+    router.push({
+      pathname: 'bookingsummary',
+      params: { serviceId: service._id }
+    });
     console.log(`${service.title} added to cart`);
   };
+
+
 
   // Calculate card width and margin based on props and screen width
   const cardStyles = {
@@ -122,7 +125,7 @@ const styles = StyleSheet.create({
   },
   currentPrice: {
     fontSize: 14,
-    color: '#4A90E2',
+    color: COLORS.primary,
     fontWeight: 'bold',
     marginRight: 8,
   },
@@ -146,7 +149,7 @@ const styles = StyleSheet.create({
   cartButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#4A90E2',
+    backgroundColor:COLORS.primary,
     borderRadius: 8,
     padding: 8,
     marginTop: 8,
