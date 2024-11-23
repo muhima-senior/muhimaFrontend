@@ -6,7 +6,8 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView
+  SafeAreaView,
+  ActivityIndicator
 } from 'react-native';
 import {
   ArrowLeft,
@@ -80,11 +81,36 @@ const ServiceDetailScreen = () => {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container}>
-        <Text>Loading...</Text>
-      </SafeAreaView>
+      <View style={styles.loader}>
+      <ActivityIndicator size="large" color={COLORS.primary} />
+    </View>
     );
   }
+
+  const handleChatNavigation = () => {
+    if (service && service.freelancer && service.user) {
+      router.push({
+        pathname: 'chat',
+        params: {
+          freelancerId: service.freelancer.userId,
+          freelancerName: service.user.username || 'Freelancer',
+          userType: 'homeowner'
+        }
+      });
+    } else {
+      Alert.alert('Error', 'Cannot initiate chat. Service details are incomplete.');
+    }
+  };
+
+  const ActionButton = ({ icon, label, onPress }) => (
+    <TouchableOpacity style={styles.actionButton} onPress={onPress}>
+      <View style={styles.actionIconContainer}>
+        {icon}
+      </View>
+      <Text style={styles.actionLabel}>{label}</Text>
+    </TouchableOpacity>
+  );
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -131,7 +157,7 @@ const ServiceDetailScreen = () => {
 
           <View style={styles.actionContainer}>
             <ActionButton icon={<Phone color={COLORS.primary} size={24} />} label="Call" />
-            <ActionButton icon={<MessageSquare color={COLORS.primary} size={24} />} label="Chat" />
+            <ActionButton icon={<MessageSquare color={COLORS.primary} size={24} />} label="Chat" onPress={handleChatNavigation}/>
             <ActionButton icon={<MapPin color={COLORS.primary} size={24} />} label="Map" />
             <ActionButton icon={<Share2 color={COLORS.primary} size={24} />} label="Share" />
           </View>
@@ -175,6 +201,11 @@ const ServiceDetailScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
