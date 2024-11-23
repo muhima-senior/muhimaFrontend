@@ -7,13 +7,14 @@ import { REACT_APP_API_URL_NEW } from '@env';
 import Base64Image from '../components/Base64Image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ArrowLeft from 'react-native-vector-icons/Feather'; // Correct import for ArrowLeft
-
+import { COLORS } from '../constants/theme';
 const BookingDetailsScreen = () => {
   const router = useRouter();
   const { id } = useLocalSearchParams();
   const [appointmentId, setAppointmentId] = useState(id);
   const [appointment, setAppointment] = useState(null);
   const [loading, setLoading] = useState(true);
+  
 
   const handleReview = () => {
     router.push({
@@ -279,7 +280,7 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#4A90E2',
+    color: COLORS.primary,
   },
   actionButtonsContainer: {
     flexDirection: 'row',
@@ -294,7 +295,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#4A90E2',
+    borderColor: COLORS.primary,
     borderRadius: 8,
     paddingVertical: 12,
     marginRight: 8,
@@ -304,7 +305,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#4A90E2',
+    backgroundColor: COLORS.primary,
     borderRadius: 8,
     paddingVertical: 12,
     marginLeft: 8,
@@ -368,7 +369,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#1a1a1a',
+    color:COLORS.primary,
     marginBottom: 16,
   },
   statusItem: {
@@ -436,7 +437,7 @@ const styles = StyleSheet.create({
   paymentValue: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#1a1a1a',
+    color: COLORS.primary,
   },
   discountText: {
     color: '#4CAF50',
