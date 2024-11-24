@@ -7,7 +7,7 @@ const Header = ({ username, navigation, route }) => {
     <View style={styles.header}>
       <View style={styles.userInfo}>
         <Image
-          source={{ uri: 'https://userphotos2.teacheron.com/835322-95145.jpeg' }}
+          source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2-Yb6GOCGW4MEaq315XfZgLN0PRsP2Vhpqw&s' }}
           style={styles.avatar}
         />
         <Text style={styles.username}>{username}</Text>

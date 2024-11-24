@@ -19,7 +19,7 @@ import Base64Image from '../../components/Base64Image';
 
 const FreelancerHomePage = () => {
   const router = useRouter();
-  const [freelancerName, setFreelancerName] = useState("Deema Alrabiah");
+  const [freelancerName, setFreelancerName] = useState("Nouf Alfayez");
   const [upcomingBookings, setUpcomingBookings] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(2);
   const [earnings, setEarnings] = useState(0);
