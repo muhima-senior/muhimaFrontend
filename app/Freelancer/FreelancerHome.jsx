@@ -19,7 +19,7 @@ import Base64Image from '../../components/Base64Image';
 
 const FreelancerHomePage = () => {
   const router = useRouter();
-  const [freelancerName, setFreelancerName] = useState("Zoha Mobin");
+  const [freelancerName, setFreelancerName] = useState("Deema Alrabiah");
   const [upcomingBookings, setUpcomingBookings] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(2);
   const [earnings, setEarnings] = useState(0);
@@ -89,7 +89,7 @@ const FreelancerHomePage = () => {
         </View>
         <TouchableOpacity onPress={handleEditProfile}>
           <Image
-            source={{ uri: 'https://userphotos2.teacheron.com/835322-95145.jpeg' }}
+            source={{ uri: 'https://img.freepik.com/free-photo/young-beautiful-woman-pink-warm-sweater-natural-look-smiling-portrait-isolated-long-hair_285396-896.jpg?semt=ais_hybrid' }}
             style={styles.profilePic}
           />
         </TouchableOpacity>
