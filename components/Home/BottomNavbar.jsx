@@ -13,16 +13,33 @@ const tabs = [
 ];
 
 const BottomNavBar = () => {
-  
   const handlePress = (tab) => {
+    const currentRoute = router.pathname; // Get the current route
+
     if (tab.name === 'Bookings') {
       router.push({
         pathname: 'mybooking',
-        params: { type: 'homeowner' }, // Changed from 'params' to 'query' for query parameters
+        params: { type: 'homeowner' },
       });
-    } 
-    else if (tab.name === 'Categories') {
-      router.push("categories");
+    } else if (tab.name === 'Profile') {
+      router.push({
+        pathname: 'profilescreen',
+      });
+    } else if (tab.name === 'Home') {
+      router.push({
+        pathname: 'home',
+      });
+    } else if (tab.name === 'Categories') {
+      router.push({
+        pathname: 'categories',
+      });
+    } else if (tab.name === 'Message') {
+      router.push({
+        pathname: 'message',
+      });
+    }
+    else if (tab.name === 'Message') {
+      router.push("message");
     }
     // Handle other tab navigations here if necessary
   };

@@ -24,8 +24,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 10,
-    marginBottom: 5,  // Add a bottom margin to separate it from the SearchBar
+    padding: 16,
+    paddingTop: 40,
+    marginBottom: 10,  // Add a bottom margin to separate it from the SearchBar
   },
   userInfo: {
     flexDirection: 'row',

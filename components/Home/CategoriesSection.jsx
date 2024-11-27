@@ -25,6 +25,13 @@ const CategoryItem = ({ item, handleCategorySelection }) => (
   </TouchableOpacity>
 );
 
+const handleSeeAll = () => {
+  router.push({
+    pathname: 'categories',
+    params: { type: "category", title: "All Categories", category: "None" },
+  });
+};
+
 const CategoriesSection = () => {
   const router = useRouter();
   
@@ -60,7 +67,7 @@ const CategoriesSection = () => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    padding: 10,
   },
   header: {
     flexDirection: 'row',

@@ -238,6 +238,11 @@ const CreateProfileScreen = () => {
               <Ionicons name="arrow-back" size={24} color="#333333" />
             </TouchableOpacity>
           ),
+          headerRight: () => (
+            <TouchableOpacity onPress={() => router.push('signinscreen')}>
+              <Ionicons name="exit-outline" size={24} color="#333333" />
+            </TouchableOpacity>
+          ),
         }}
       />
       {/* <KeyboardAvoidingView
