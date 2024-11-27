@@ -3,20 +3,12 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-nati
 import { useRouter } from 'expo-router';
 import { ArrowLeft, Star } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useGlobalStore } from './store/GlobalStore';
 
-const categories = [
-  { id: '1', name: 'Carpenter', icon: '🔧', services: '10 Services' },
-  { id: '2', name: 'Cleaner', icon: '🧹', services: '5 Services' },
-  { id: '3', name: 'Painter', icon: '🎨', services: '8 Services' },
-  { id: '4', name: 'Electrician', icon: '⚡', services: '12 Services' },
-  { id: '5', name: 'AC Repair', icon: '❄️', services: '7 Services' },
-  { id: '6', name: 'Plumber', icon: '🔧', services: '6 Services' },
-  { id: '7', name: "Men's Salon", icon: '💇', services: '3 Services' }
-];
 
 const CategoriesSection = () => {
   const router = useRouter();
-  
+  const { categories } = useGlobalStore();
   const handleCategorySelection = (categoryName) => {
     console.log("Category selected: ", categoryName);
     router.push({
@@ -42,7 +34,7 @@ const CategoriesSection = () => {
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>All Categories</Text>
                 <View style={{ width: 26 }} />
-            </View>
+        </View>
       
       <ScrollView style={styles.scrollView}>
         {categories.map((category, index) => (

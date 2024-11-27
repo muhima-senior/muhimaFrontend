@@ -24,17 +24,6 @@ import { REACT_APP_API_URL_NEW } from '@env';
 import { useGlobalStore } from '../store/GlobalStore';
 
 
-const categories = [
-  { label: 'Electrician', value: 'electrician' },
-  { label: 'Painter', value: 'painter' },
-  { label: 'Cleaner', value: 'cleaner' },
-  { label: 'Hairdresser', value: 'hairdresser' },
-  { label: 'AC Repair', value: 'ac_repair' },
-  { label: 'Plumber', value: 'plumber' },
-  { label: 'Carpenter', value: 'carpenter' },
-  { label: 'Gardener', value: 'gardener' },
-];
-
 const getIconForCategory = (category) => {
   const iconMap = {
     electrician: 'bulb-outline',
@@ -58,7 +47,7 @@ const CreateServiceScreen = () => {
   const [servicePrice, setServicePrice] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [serviceImage, setServiceImage] = useState(null);
-  const { userId, setUserId } = useGlobalStore();
+  const { userId, setUserId, categories } = useGlobalStore();
 
   // UI state
   const [openCategory, setOpenCategory] = useState(false);

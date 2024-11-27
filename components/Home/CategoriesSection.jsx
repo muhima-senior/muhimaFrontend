@@ -1,16 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useGlobalStore } from '../../app/store/GlobalStore';
 
-const categories = [
-  { id: '1', name: 'Carpenter', icon: '🔧'},
-  { id: '2', name: 'Cleaner', icon: '🧹'},
-  { id: '3', name: 'Painter', icon: '🎨'},
-  { id: '4', name: 'Electrician', icon: '⚡' },
-  { id: '5', name: 'AC Repair', icon: '❄️'},
-  { id: '6', name: 'Plumber', icon: '🔧'},
-  { id: '7', name: "Men's Salon", icon: '💇' }
-];
 
 const CategoryItem = ({ item, handleCategorySelection }) => (
   <TouchableOpacity
@@ -34,7 +26,8 @@ const handleSeeAll = () => {
 
 const CategoriesSection = () => {
   const router = useRouter();
-  
+  const { categories } = useGlobalStore();
+
   const handleCategorySelection = (categoryName) => {
     console.log("Category: ", categoryName)
     router.push({

@@ -13,17 +13,6 @@ import axios from 'axios';
 import { useGlobalStore } from '../store/GlobalStore';
 
 
-const categories = [
-  { label: 'Electrician', value: 'electrician' },
-  { label: 'Painter', value: 'painter' },
-  { label: 'Cleaner', value: 'cleaner' },
-  { label: 'Hairdresser', value: 'hairdresser' },
-  { label: 'AC Repair', value: 'ac_repair' },
-  { label: 'Plumber', value: 'plumber' },
-  { label: 'Carpenter', value: 'carpenter' },
-  { label: 'Gardener', value: 'gardener' },
-];
-
 const getIconForCategory = (category) => {
   switch (category) {
     case 'electrician':
@@ -48,6 +37,7 @@ const getIconForCategory = (category) => {
 };
 
 const CreateProfileScreen = () => {
+
   const [profileDescription, setProfileDescription] = useState('');
   const [skills, setSkills] = useState([]);
   const [certification, setCertification] = useState('');
@@ -55,7 +45,7 @@ const CreateProfileScreen = () => {
   const [availableSlots, setAvailableSlots] = useState({
     monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [], sunday: []
   });
-  const { userId, setUserId } = useGlobalStore();
+  const { userId, setUserId, categories } = useGlobalStore();
 
   const [phoneNumber, setPhoneNumber] = useState('');
   const [profilePicture, setProfilePicture] = useState(null);
