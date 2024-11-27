@@ -13,7 +13,7 @@ import { useGlobalStore } from './store/GlobalStore';
 const Home = () => {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
-  const { user, setUser } = useGlobalStore();
+  const { user, setUser, userId } = useGlobalStore();
 
   const renderHeader = () => (
     <View style={{ padding: SIZES.medium }}>
@@ -32,7 +32,7 @@ const Home = () => {
           headerTitle: "",
         }}
       />
-        <Header username={user}/>
+        <Header username={user} userId={userId}/>
       <FlatList
         data={[/* dummy data, if needed */]}
         renderItem={null} // Since we handle custom components, set this to null

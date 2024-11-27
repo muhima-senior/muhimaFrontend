@@ -20,41 +20,73 @@ const SignInScreen = () => {
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-  const { user, setUser, userType, setUserId } = useGlobalStore();
+  const { user, setUser, userType, setUserId, userId } = useGlobalStore();
 
 
   const handleSignIn = async () => {
     try {
+      // Validate inputs
       await validationSchema.validate({ email, password }, { abortEarly: false });
       setErrors({});
-
+  
       const api = axios.create({
         baseURL: REACT_APP_API_URL_NEW,
       });
+  
+      // Call signin endpoint
       const response = await api.post('/api/users/signin', {
         email,
         password,
-        userType
+        userType,
       });
-      console.log(response.data.username);
-
+  
       if (response.status === 200) {
-        Alert.alert('Success', 'Login successful');
         setUser(response.data.username);
         setUserId(response.data.userId);
-        if (userType == 'Freelancer')
-          router.push('Freelancer/FreelancerHome');
-        else
-          router.push('home');
+  
+        if (userType === 'Freelancer') {
+          try {
+            const freelancerResponse = await api.get(`/api/freelancer/user/${response.data.userId}`);
+            if (freelancerResponse.status === 200) {
+              router.push('Freelancer/FreelancerHome');
+              Alert.alert('Success', 'Login successful');
+            }
+          } catch (freelancerError) {
+            if (freelancerError.response?.status === 404) {
+              router.push('Freelancer/createprofile');
+            } else {
+              throw freelancerError; // Handle other errors
+            }
+          }
+        } else if (userType === 'Homeowner') {
+          try {
+            const homeownerResponse = await api.get(`/api/homeowner/user/${response.data.userId}`);
+            if (homeownerResponse.status === 200) {
+              router.push('home');
+              Alert.alert('Success', 'Login successful');
+            }
+          } catch (homeownerError) {
+            if (homeownerError.response?.status === 404) {
+              router.push('Homeowner/createProfile');
+            } else {
+              throw homeownerError; // Handle other errors
+            }
+          }
+        }
+        
       }
     } catch (error) {
+      // Validation errors
       if (error instanceof yup.ValidationError) {
         const newErrors = {};
         error.inner.forEach(err => {
           newErrors[err.path] = err.message;
         });
         setErrors(newErrors);
-      } else if (axios.isAxiosError(error)) {
+      } 
+      // Axios errors
+      else if (axios.isAxiosError(error)) {
+        console.error('Axios Error:', error.response?.data);
         if (error.response) {
           switch (error.response.status) {
             case 400:
@@ -69,12 +101,15 @@ const SignInScreen = () => {
         } else {
           Alert.alert('Error', 'Network error. Please try again.');
         }
-      } else {
+      } 
+      // Generic errors
+      else {
+        console.error('Unexpected Error:', error);
         Alert.alert('Error', 'An unexpected error occurred');
       }
     }
   };
-
+  
   const handleForgotPassword = () => {
     router.push('forgotpassword');
   };
