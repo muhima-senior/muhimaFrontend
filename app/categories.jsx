@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { ArrowLeft, Star } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGlobalStore } from './store/GlobalStore';
-
+import BottomNavBar from '../components/Home/BottomNavbar';
 
 const CategoriesSection = () => {
   const router = useRouter();
@@ -53,6 +53,7 @@ const CategoriesSection = () => {
           </TouchableOpacity>
         ))}
       </ScrollView>
+      <BottomNavBar/> 
       </SafeAreaView>
   );
 };

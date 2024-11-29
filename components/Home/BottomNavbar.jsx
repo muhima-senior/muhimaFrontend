@@ -2,23 +2,29 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Home, Grid, Calendar, MessageSquare, User } from 'lucide-react-native';
-import { router } from "expo-router";
+import { router, usePathname } from "expo-router";
 
 const tabs = [
-  { name: 'Home', icon: Home },
-  { name: 'Categories', icon: Grid },
-  { name: 'Bookings', icon: Calendar },
-  { name: 'Message', icon: MessageSquare },
-  { name: 'Profile', icon: User },
+  { name: 'Home', icon: Home, route: 'home' },
+  { name: 'Categories', icon: Grid, route: 'categories' },
+  { name: 'Bookings', icon: Calendar, route: 'Homeowner/mybooking' },
+  { name: 'Message', icon: MessageSquare, route: 'message' },
+  { name: 'Profile', icon: User, route: 'profilescreen' },
 ];
 
 const BottomNavBar = () => {
-  const handlePress = (tab) => {
-    const currentRoute = router.pathname; // Get the current route
+  const pathname = usePathname();
 
+  const isActive = (tabRoute) => {
+    // Remove any params from the current route for comparison
+    const baseCurrentRoute = pathname.split('?')[0];
+    return baseCurrentRoute.includes(tabRoute);
+  };
+
+  const handlePress = (tab) => {
     if (tab.name === 'Bookings') {
       router.push({
-        pathname: 'mybooking',
+        pathname: 'Homeowner/mybooking',
         params: { type: 'homeowner' },
       });
     } else if (tab.name === 'Profile') {
@@ -34,29 +40,33 @@ const BottomNavBar = () => {
         pathname: 'categories',
       });
     } else if (tab.name === 'Message') {
-      router.push({
-        pathname: 'message',
-      });
-    }
-    else if (tab.name === 'Message') {
       router.push("message");
     }
-    // Handle other tab navigations here if necessary
   };
-  
 
-  
-  
   return (
     <View style={styles.container}>
-      {tabs.map((tab, index) => (
-        <TouchableOpacity key={index} style={styles.tab} onPress={() => handlePress(tab)}>
-          <tab.icon color={tab.name === 'Home' ? '#4A90E2' : '#999'} size={24} />
-          <Text style={[styles.tabText, tab.name === 'Home' && styles.activeTabText]}>
-            {tab.name}
-          </Text>
-        </TouchableOpacity>
-      ))}
+      {tabs.map((tab, index) => {
+        const active = isActive(tab.route);
+        return (
+          <TouchableOpacity 
+            key={index} 
+            style={styles.tab} 
+            onPress={() => handlePress(tab)}
+          >
+            <tab.icon 
+              color={active ? '#4A90E2' : '#999'} 
+              size={24} 
+            />
+            <Text style={[
+              styles.tabText, 
+              active && styles.activeTabText
+            ]}>
+              {tab.name}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 };

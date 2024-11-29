@@ -4,7 +4,7 @@ import ServiceCard from './ServiceCard';
 import { useRouter } from 'expo-router';
 import axios from 'axios';
 import { REACT_APP_API_URL_NEW } from '@env';
-
+import { COLORS } from '../../constants/theme';
 const BestServicesSection = () => {
   const router = useRouter();
   const [services, setServices] = useState([]);
@@ -13,7 +13,7 @@ const BestServicesSection = () => {
   const handleSeeAll = () => {
     router.push({
       pathname: 'bestservicescreen',
-      params: { type: "best", title: "Best Services", category: "None" },
+      params: { type: "best", title: "All Services", category: "None" },
     });
   };
 
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   seeAll: {
-    color: '#4A90E2',
+    color:COLORS.primary,
     fontSize: 14,
   },
 });

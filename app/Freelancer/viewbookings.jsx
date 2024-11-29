@@ -35,7 +35,7 @@ const BookingsScreen = () => {
     if (!selectedBooking) return;
     console.log(newStatus)
     setIsUpdating(true);
-    console.log(selectedBooking)
+    console.log(selectedBooking._id)
     console.log(newStatus)
     try {
       await axios.patch(`${REACT_APP_API_URL_NEW}/api/appointment/updateStatus`, {

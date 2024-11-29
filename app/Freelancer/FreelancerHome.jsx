@@ -19,12 +19,22 @@ import Base64Image from '../../components/Base64Image';
 
 const FreelancerHomePage = () => {
   const router = useRouter();
-  const [freelancerName, setFreelancerName] = useState("Nouf Alfayez");
+  const [freelancer, setFreelancer] = useState(null);
   const [upcomingBookings, setUpcomingBookings] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(2);
   const [earnings, setEarnings] = useState(0);
   const [services, setServices] = useState([]);
-  const { userId } = useGlobalStore();
+  const { userId, user } = useGlobalStore();
+
+  const getFreelancerData = async () => {
+    try {
+      const response = await axios.get(`${REACT_APP_API_URL_NEW}/api/freelancer/user/${userId}`);
+      setFreelancer(response.data);
+    } catch (error) {
+      console.error('Error fetching pending bookings:', error);
+      setUpcomingBookings(0);
+    }
+  };
 
   const getPendingBookings = async () => {
     try {
@@ -63,6 +73,7 @@ const FreelancerHomePage = () => {
 
   useEffect(() => {
     if (userId) {
+      getFreelancerData();
       getPendingBookings();
       getServices();
       getBookingEarnings();
@@ -71,8 +82,8 @@ const FreelancerHomePage = () => {
 
   const handleEditProfile = () => router.push('EditProfileScreen');
   const handleViewBookings = () => router.push('Freelancer/viewbookings');
-  const handleMessages = () => router.push('MessagesScreen');
-  const handleEarnings = () => router.push('EarningsScreen');
+  const handleMessages = () => router.push('message');
+  const handleEarnings = () => router.push('Freelancer/earnings');
   const handleAvailability = () => router.push('AvailabilityScreen');
   const handleReviews = () => router.push('Freelancer/viewreviews');
   const handleAddService = () => router.push('Freelancer/createservice');
@@ -85,13 +96,17 @@ const FreelancerHomePage = () => {
       <View style={styles.header}>
         <View>
           <Text style={styles.headerGreeting}>Welcome back,</Text>
-          <Text style={styles.headerName}>{freelancerName}</Text>
+          <Text style={styles.headerName}>{user}</Text>
         </View>
         <TouchableOpacity onPress={handleEditProfile}>
-          <Image
-            source={{ uri: 'https://img.freepik.com/free-photo/young-beautiful-woman-pink-warm-sweater-natural-look-smiling-portrait-isolated-long-hair_285396-896.jpg?semt=ais_hybrid' }}
+        {freelancer?.pictureData ? (
+          <Base64Image
+            base64String={freelancer.pictureData}
             style={styles.profilePic}
           />
+        ) : (
+          <Text>No image available</Text>
+        )}                  
         </TouchableOpacity>
       </View>
 

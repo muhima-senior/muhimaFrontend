@@ -16,36 +16,31 @@ setIsDarkMode(!isDarkMode);
 
   switch (screen) {
     case 'EditProfile':
-      if (currentRoute !== '/Freelancer/createprofile') {
-        router.push('/Freelancer/createprofile');
+      if (currentRoute !== '/editprofile') {
+        router.push('/ProfilePages/editprofile');
       }
       break;
     case 'ChangePassword':
       if (currentRoute !== '/changepass') {
-        router.push('/Pages/changepass');
+        router.push('/ProfilePages/changepass');
       }
       break;
     case 'MyBookings':
       if (currentRoute !== '/mybooking') {
         router.push({
-          pathname: '/Pages/mybooking',
-          query: { type: 'homeowner' }, // Use query for params
+          pathname: 'mybooking',
+          params: { type: 'homeowner' },
         });
-      }
-      break;
-    case 'MyAddresses':
-      if (currentRoute !== '/myaddress') {
-        router.push('/Pages/myaddress');
       }
       break;
     case 'PrivacyPolicy':
       if (currentRoute !== '/privacy') {
-        router.push('/Pages/privacy');
+        router.push('/ProfilePages/privacy');
       }
       break;
     case 'TermsConditions':
       if (currentRoute !== '/terms') {
-        router.push('/Pages/terms');
+        router.push('/ProfilePages/terms');
       }
       break;
     case 'Logout':
@@ -64,13 +59,13 @@ setIsDarkMode(!isDarkMode);
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.profileHeader}>
           <Image
-            source={{ uri: 'https://via.placeholder.com/150' }}
+            source={{ uri: 'https://via.placeholder.com/150' }} // Replace with actual profile picture URL
             style={styles.profileImage}
           />
           <TouchableOpacity style={styles.cameraIcon}>
             <Ionicons name="camera" size={18} color="#fff" />
           </TouchableOpacity>
-          <Text style={styles.profileName}>Nouf</Text>
+          <Text style={styles.profileName}>Mudassir</Text>
         </View>
 
         <View style={styles.optionsContainer}>
@@ -88,23 +83,6 @@ setIsDarkMode(!isDarkMode);
             <MaterialIcons name="event-note" size={24} color="#333" />
             <Text style={styles.optionText}>My Bookings</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity style={styles.option} onPress={() => handleNavigation('MyAddresses')}>
-            <Ionicons name="location-outline" size={24} color="#333" />
-            <Text style={styles.optionText}>My Addresses</Text>
-          </TouchableOpacity>
-
-          <View style={styles.option}>
-            <Ionicons name="eye-outline" size={24} color="#333" />
-            <Text style={styles.optionText}>Dark Mode</Text>
-            <Switch
-              value={isDarkMode}
-              onValueChange={toggleDarkMode}
-              thumbColor={isDarkMode ? '#fff' : '#f4f3f4'}
-              trackColor={{ false: '#ccc', true: '#333' }}
-              style={{ marginLeft: 'auto' }}
-            />
-          </View>
 
           <TouchableOpacity style={styles.option} onPress={() => handleNavigation('PrivacyPolicy')}>
             <FontAwesome name="shield" size={24} color="#333" />
@@ -167,7 +145,7 @@ const styles = StyleSheet.create({
   option: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 30,
     borderBottomWidth: 1,
     borderBottomColor: '#eaeaea',
   },

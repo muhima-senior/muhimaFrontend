@@ -5,7 +5,7 @@ import { GlobalStoreProvider } from './store/GlobalStore'; // Adjust the import 
 import ServiceDetailScreen from './servicedetailscreen'
 
 export const unstable_settings = {
-  initialRouteName: "home",
+  initialRouteName: "landingpage",
 };
 
 const Layout = () => {
@@ -21,14 +21,14 @@ const Layout = () => {
 
   return (
     <GlobalStoreProvider>
-      <Stack initialRouteName="home" screenOptions={{ headerShown: false }}>
+      <Stack initialRouteName="landingpage" screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="landingpage" /> 
         <Stack.Screen name="home" />
         <Stack.Screen name="chat" />
         <Stack.Screen name="nearby" />
         <Stack.Screen name="bestservicescreen" />
         <Stack.Screen name="servicedetailscreen" />
         <Stack.Screen name="bookingsummary" />
-        <Stack.Screen name="landingpage" />
         <Stack.Screen name="signinscreen" />
         <Stack.Screen name="signupscreen" />
         <Stack.Screen name="checkout" />

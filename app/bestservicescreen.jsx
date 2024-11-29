@@ -54,7 +54,7 @@ const BestServicesScreen = () => {
         <FlatList
           data={services}
           renderItem={({ item }) => <ServiceCard service={item} cardWidth={0.9} />}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item._id}
           contentContainerStyle={styles.list}
           nestedScrollEnabled={true}
         />

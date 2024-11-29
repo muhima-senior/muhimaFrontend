@@ -7,7 +7,6 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
-  Platform,
   Image,
   Alert,
   Dimensions,
@@ -21,10 +20,11 @@ import { REACT_APP_API_URL_NEW } from '@env';
 import axios from 'axios';
 import { useGlobalStore } from '../store/GlobalStore';
 import { LinearGradient } from 'expo-linear-gradient';
+import Base64Image from '../../components/Base64Image'; // Add this import
 
 const { width } = Dimensions.get('window');
 
-const CreateProfileScreen = () => {
+const EditProfileScreen = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
   const [profilePicture, setProfilePicture] = useState(null);
@@ -34,12 +34,35 @@ const CreateProfileScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { userId } = useGlobalStore();
   const router = useRouter();
+  const [ homeowner, setHomeowner] = useState(null)
 
+  // Fetch existing profile data on component mount
   useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get(`${REACT_APP_API_URL_NEW}/api/homeowner/user/${userId}`);
+        //const { mobileNumber, address, profilePicture } = response.data;
+        setHomeowner(response.data);
+      //  setPhoneNumber(mobileNumber || '');
+        //setAddress(address || '');
+       // setProfilePicture(profilePicture);
+      
+      } catch (error) {
+        console.error('Error fetching profile data:', error);
+        Alert.alert('Error', 'Failed to load profile information.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProfileData();
+
+    // Request media library permissions
     (async () => {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission Required', 'Sorry, we need camera roll permissions to upload profile pictures.');
+        Alert.alert('Permission Required', 'Camera roll permissions are needed to upload profile pictures.');
       }
     })();
   }, []);
@@ -59,7 +82,7 @@ const CreateProfileScreen = () => {
         const fileUri = result.assets[0].uri;
         const filename = fileUri.split('/').pop();
         const match = /\.(\w+)$/.exec(filename);
-        const type = match ? `image/${match[1]}` : `image`;
+        const type = match ? `image/${match[1]}` : 'image';
         setProfilePictureFile({ uri: fileUri, name: filename, type });
       }
     } catch (error) {
@@ -92,19 +115,14 @@ const CreateProfileScreen = () => {
     }
   };
 
-  const handleCreateProfile = async () => {
+  const handleUpdateProfile = async () => {
     if (!validatePhoneNumber(phoneNumber)) {
-      Alert.alert('Invalid Phone Number', 'Please enter a valid phone number before creating your profile.');
+      Alert.alert('Invalid Phone Number', 'Please enter a valid phone number before updating your profile.');
       return;
     }
 
     if (!address.trim()) {
-      Alert.alert('Invalid Address', 'Please enter a valid address before creating your profile.');
-      return;
-    }
-
-    if (!profilePictureFile) {
-      Alert.alert('Profile Picture Required', 'Please add a profile picture before creating your profile.');
+      Alert.alert('Invalid Address', 'Please enter a valid address before updating your profile.');
       return;
     }
 
@@ -115,21 +133,25 @@ const CreateProfileScreen = () => {
       formData.append('userId', userId);
       formData.append('mobileNumber', phoneNumber);
       formData.append('address', address);
-      formData.append('pictureData', profilePictureFile);
+      
+      // Only append pictureData if a new image was selected
+      if (profilePictureFile) {
+        formData.append('pictureData', profilePictureFile);
+      }
 
       const api = axios.create({ baseURL: REACT_APP_API_URL_NEW });
-      const apiResponse = await api.post('/api/homeowner', formData, {
+      await api.put(`/api/homeowner/${userId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      Alert.alert('Success', 'Profile created successfully!', [
+      Alert.alert('Success', 'Profile updated successfully!', [
         { text: 'OK', onPress: () => router.push('home') }
       ]);
     } catch (error) {
       console.error('Error details:', error.response?.data || error.message);
-      Alert.alert('Error', 'Failed to create profile. Please try again.');
+      Alert.alert('Error', 'Failed to update profile. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -160,26 +182,35 @@ const CreateProfileScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.headerContainer}>
-          <Text style={styles.headerTitle}>Create Your Profile</Text>
+          <Text style={styles.headerTitle}>Edit Profile</Text>
         </View>
 
-        <TouchableOpacity style={styles.profilePictureContainer} onPress={pickImage}>
-          {profilePicture ? (
-            <>
-              <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
-              <View style={styles.editIconContainer}>
-                <Ionicons name="pencil" size={16} color={COLORS.white} />
-              </View>
-            </>
-          ) : (
+        <TouchableOpacity 
+          style={styles.profilePictureContainer} 
+          onPress={pickImage}
+        >
+        
+        {homeowner?.pictureData ? (
+            <Base64Image
+                base64String={homeowner.pictureData}
+                style={styles.profilePicture}
+            />
+            ) : (
             <LinearGradient
-              colors={[COLORS.primary, COLORS.secondary]}
-              style={styles.profilePicturePlaceholder}
+                colors={[COLORS.primary, COLORS.secondary]}
+                style={styles.profilePicturePlaceholder}
             >
-              <Ionicons name="camera" size={40} color={COLORS.white} />
-              <Text style={styles.profilePictureText}>Add Photo</Text>
+                <Ionicons 
+                name="person" 
+                size={60} 
+                color={COLORS.black} 
+                />
+                <Text style={styles.profilePictureText}>Edit Photo</Text>
             </LinearGradient>
-          )}
+            )}
+          <View style={styles.editIconContainer}>
+            <Ionicons name="pencil" size={16} color={COLORS.black} />
+          </View>
         </TouchableOpacity>
 
         {/* Phone Number Input */}
@@ -190,8 +221,9 @@ const CreateProfileScreen = () => {
             <TextInput
               style={[styles.input, phoneNumberError ? styles.inputError : null]}
               placeholder="Enter your phone number"
-              value={phoneNumber}
+              value={homeowner.mobileNumber}
               onChangeText={handlePhoneNumberChange}
+              keyboardType="phone-pad"
             />
           </View>
           {phoneNumberError ? <Text style={styles.errorText}>{phoneNumberError}</Text> : null}
@@ -205,22 +237,24 @@ const CreateProfileScreen = () => {
             <TextInput
               style={[styles.input, addressError ? styles.inputError : null]}
               placeholder="Enter your address"
-              value={address}
+              value={homeowner.address}
               onChangeText={handleAddressChange}
+              multiline={true}
+              numberOfLines={2}
             />
           </View>
           {addressError ? <Text style={styles.errorText}>{addressError}</Text> : null}
         </View>
 
         <TouchableOpacity
-          style={[styles.createProfileButton, isLoading && styles.createProfileButtonDisabled]}
-          onPress={handleCreateProfile}
+          style={[styles.updateProfileButton, isLoading && styles.updateProfileButtonDisabled]}
+          onPress={handleUpdateProfile}
           disabled={isLoading}
         >
           {isLoading ? (
             <ActivityIndicator color={COLORS.white} />
           ) : (
-            <Text style={styles.createProfileButtonText}>Create Profile</Text>
+            <Text style={styles.updateProfileButtonText}>Update Profile</Text>
           )}
         </TouchableOpacity>
       </ScrollView>
@@ -260,11 +294,6 @@ const styles = StyleSheet.create({
     fontFamily: FONT.bold,
     color: COLORS.primary,
     marginBottom: SIZES.small,
-  },
-  headerSubtitle: {
-    fontSize: SIZES.medium,
-    fontFamily: FONT.regular,
-    color: COLORS.gray,
   },
   formContainer: {
     marginTop: SIZES.large,
@@ -334,7 +363,7 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontFamily: FONT.medium,
   },
-  createProfileButton: {
+  updateProfileButton: {
     height: 56,
     backgroundColor: COLORS.primary,
     borderRadius: 28,
@@ -343,10 +372,10 @@ const styles = StyleSheet.create({
     marginTop: SIZES.xxLarge,
     ...SHADOWS.medium,
   },
-  createProfileButtonDisabled: {
+  updateProfileButtonDisabled: {
     backgroundColor: COLORS.gray2,
   },
-  createProfileButtonText: {
+  updateProfileButtonText: {
     color: COLORS.white,
     fontSize: SIZES.large,
     fontFamily: FONT.bold,
@@ -360,4 +389,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreateProfileScreen;
+export default EditProfileScreen;
