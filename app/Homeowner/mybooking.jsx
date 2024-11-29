@@ -42,9 +42,9 @@ const BookingCard = ({ item }) => {
 const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
         case 'confirmed':
-            return COLORS.green;
+            return COLORS.secondary;
         case 'canceled':
-            return COLORS.red;
+            return COLORS.tertiary;
         case 'completed':
             return COLORS.primary;
         default:
@@ -115,6 +115,7 @@ const styles = StyleSheet.create({
         padding: 16,
         borderBottomWidth: 1,
         borderBottomColor: '#ddd',
+        marginBottom: 10
     },
     headerTitle: {
         flex: 1,
