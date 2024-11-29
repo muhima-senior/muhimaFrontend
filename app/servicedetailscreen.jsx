@@ -23,6 +23,7 @@ import axios from 'axios';
 import { REACT_APP_API_URL_NEW } from '@env';
 import { COLORS } from '../constants/theme';
 import Base64Image from '@/components/Base64Image';
+import { useGlobalStore } from './store/GlobalStore';
 
 const ActionButton = ({ icon, label }) => (
   <TouchableOpacity style={styles.actionButton}>
@@ -36,6 +37,7 @@ const ActionButton = ({ icon, label }) => (
 const ServiceDetailScreen = () => {
   const router = useRouter();
   // const route = useRoute();
+  const { userId, userType } = useGlobalStore();
 
   // States
   const [serviceId, setServiceId] = useState(null);
@@ -94,7 +96,8 @@ const ServiceDetailScreen = () => {
         params: {
           freelancerId: service.freelancer.userId,
           freelancerName: service.user.username || 'Freelancer',
-          userType: 'homeowner'
+          userType: 'homeowner',
+          homeownerId: userId
         }
       });
     } else {

@@ -15,7 +15,7 @@ import { REACT_APP_API_URL_NEW } from '@env';
 import { MessageSquare, Search } from 'lucide-react-native';
 import { ArrowLeft, Star } from 'lucide-react-native';
 import { useGlobalStore } from './store/GlobalStore';
-
+import Base64Image from '../components/Base64Image';
 
 const ChatListScreen = () => {
   const router = useRouter();
@@ -64,9 +64,10 @@ const ChatListScreen = () => {
       console.log(userId)
       const response = await axios.get(`${REACT_APP_API_URL_NEW}/api/chat/getChats/${userId}`);
       setChats(response.data.chats);
+      console.log(response.data.chats[0].freelancerPicture)
     } catch (error) {
       console.error('Error fetching chats:', error);
-      setChats(dummyChats); // Use dummy data on error
+      setChats(dummyChats);
     } finally {
       setLoading(false);
     }
@@ -90,10 +91,15 @@ const ChatListScreen = () => {
         }
       })}
     >
-      <Image 
-        source={userType === 'Homeowner' ? item.freelancerId.pictureData : item.homeownerId.pictureData}
-        style={styles.profileImage} 
-      />
+        {item?.freelancerPicture ? (
+          <Base64Image
+            base64String={userType === 'Homeowner' ? item.freelancerPicture : item.homeownerPicture}
+            style={styles.profileImage}
+          />
+        ) : (
+          <Text>No image available</Text>
+        )}
+
       <View style={styles.chatDetails}>
         <View style={styles.chatHeader}>
         <Text style={styles.freelancerName}>
