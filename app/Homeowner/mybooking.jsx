@@ -3,10 +3,10 @@ import { View, SafeAreaView, Text, StyleSheet, TouchableOpacity, ScrollView, Act
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
 import { REACT_APP_API_URL_NEW } from '@env';
-import { useGlobalStore } from './store/GlobalStore';
+import { useGlobalStore } from '../store/GlobalStore';
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { ArrowLeft } from 'lucide-react-native';
-import { COLORS, FONT, SIZES, SHADOWS }  from '../constants/theme'; // Assuming you're importing the theme
+import { COLORS, FONT, SIZES, SHADOWS }  from '../../constants';
 
 const BookingCard = ({ item }) => {
     const router = useRouter();
