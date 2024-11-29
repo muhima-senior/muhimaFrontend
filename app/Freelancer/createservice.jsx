@@ -295,7 +295,7 @@ const CreateServiceScreen = () => {
           </View>
 
           <View style={styles.formField}>
-            <Text style={styles.fieldLabel}>Service Price (in AED)</Text>
+            <Text style={styles.fieldLabel}>Service Price (in SAR)</Text>
             <TextInput
               style={[styles.input, errors.price && styles.errorBorder]}
               placeholder="Enter service price"

@@ -9,7 +9,6 @@ import TimeSlotPicker from '../components/TimeSlotPicker';
 import { COLORS } from '../constants/theme';
 
 
-
 const COUPON_BUTTON_TEXT = 'Apply Coupon';
 
 const BookingSummaryScreen = () => {
@@ -18,6 +17,7 @@ const BookingSummaryScreen = () => {
   const [service, setService] = useState(null);
   const [isPickerVisible, setIsPickerVisible] = useState(false);
 
+
   const router = useRouter();
   const {serviceId} = useLocalSearchParams();
   console.log("Booking summary: ",serviceId)
@@ -25,6 +25,8 @@ const BookingSummaryScreen = () => {
   const handleSelectSlotPress = () => {
     setIsPickerVisible(true);
   };
+
+
 
   const handleClosePicker = () => {
     setIsPickerVisible(false);
@@ -134,7 +136,6 @@ const BookingSummaryScreen = () => {
           <TouchableOpacity style={styles.couponButton}>
             <ArrowLeft color={COLORS.primary} size={24} />
             <Text style={styles.couponButtonText}>{COUPON_BUTTON_TEXT}</Text>
-            <ArrowLeft color="#000" size={24} />
           </TouchableOpacity>
 
           <View style={styles.summaryContainer}>
@@ -156,38 +157,28 @@ const BookingSummaryScreen = () => {
             </View>
           </View>
 
-          <View style={styles.addressContainer}>
-            <ArrowLeft size={24} color={COLORS.primary} />
-            <View style={styles.addressTextContainer}>
-              <Text style={styles.addressLabel}>Address</Text>
-              <Text style={styles.addressText}>2118 Thornridge California</Text>
-            </View>
-            <TouchableOpacity>
-              <Text style={styles.changeText}>Change</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Optional: Frequently Added Together Section */}
-    
+        
         </ScrollView>
       )}
 
-      <View style={styles.bottomTabContainer}>
-        <View style={styles.bottomTabContent}>
-          <View style={styles.priceContainer}>
-            <Text style={styles.bottomPrice}>SAR {grandTotal.toFixed(2)}</Text>
-            <TouchableOpacity>
-              <Text style={styles.viewDetails}>View Details</Text>
+      {!loading && service && (
+        <View style={styles.bottomTabContainer}>
+          <View style={styles.bottomTabContent}>
+            <View style={styles.priceContainer}>
+              <Text style={styles.bottomPrice}>SAR {grandTotal.toFixed(2)}</Text>
+              <TouchableOpacity>
+                <Text style={styles.viewDetails}>View Details</Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity 
+              style={styles.selectSlotButton} 
+              onPress={handleSelectSlotPress}
+            >
+              <Text style={styles.selectSlotButtonText}>Select Slot</Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity 
-            style={styles.selectSlotButton} 
-            onPress={handleSelectSlotPress}
-          >
-            <Text style={styles.selectSlotButtonText}>Select Slot</Text>
-          </TouchableOpacity>
         </View>
-      </View>
+      )}
 
       {isPickerVisible && (
         <TimeSlotPicker 
@@ -195,6 +186,8 @@ const BookingSummaryScreen = () => {
           quantity={quantity}
           total={grandTotal}
           serviceId={serviceId}
+          serviceName={service?.title}
+          freelancerId={service?.freelancer._id}
           onClose={handleClosePicker} 
         />
       )}
@@ -207,7 +200,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-header: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
@@ -402,7 +395,6 @@ header: {
     fontWeight: '600',
     color: '#333333',
     marginTop: 4,
-  
   },
   changeText: {
     fontSize: 14,
@@ -423,7 +415,6 @@ header: {
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
-
   bottomTabContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -432,25 +423,21 @@ header: {
     paddingHorizontal: 20,
     backgroundColor: '#FFFFFF',
   },
-
   priceContainer: {
     flex: 1,
     marginRight: 16,
   },
-
   bottomPrice: {
     fontSize: 24,
     fontWeight: 'bold',
     color: COLORS.primary,
     marginBottom: 4,
   },
-
   viewDetails: {
     fontSize: 14,
     color: '#666666',
     textDecorationLine: 'underline',
   },
-
   selectSlotButton: {
     paddingVertical: 14,
     paddingHorizontal: 24,
@@ -462,11 +449,11 @@ header: {
     shadowOpacity: 0.1,
     shadowRadius: 2,
   },
-
   selectSlotButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
   },
 });
+
 export default BookingSummaryScreen;
