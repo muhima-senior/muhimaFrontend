@@ -64,7 +64,6 @@ const ChatListScreen = () => {
       console.log(userId)
       const response = await axios.get(`${REACT_APP_API_URL_NEW}/api/chat/getChats/${userId}`);
       setChats(response.data.chats);
-      console.log(response.data.chats[0].freelancerPicture)
     } catch (error) {
       console.error('Error fetching chats:', error);
       setChats(dummyChats);
