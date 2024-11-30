@@ -80,7 +80,7 @@ const FreelancerHomePage = () => {
     }
   }, [userId]);
 
-  const handleEditProfile = () => router.push('EditProfileScreen');
+  const handleEditProfile = () => router.push();
   const handleViewBookings = () => router.push('Freelancer/viewbookings');
   const handleMessages = () => router.push('message');
   const handleEarnings = () => router.push('Freelancer/earnings');
@@ -98,7 +98,7 @@ const FreelancerHomePage = () => {
           <Text style={styles.headerGreeting}>Welcome back,</Text>
           <Text style={styles.headerName}>{user}</Text>
         </View>
-        <TouchableOpacity onPress={handleEditProfile}>
+        <TouchableOpacity >
         {freelancer?.pictureData ? (
           <Base64Image
             base64String={freelancer.pictureData}
@@ -163,8 +163,8 @@ const ActionButton = ({ icon, text, onPress, unreadMessages, fullWidth }) => (
     <Ionicons name={icon} size={SIZES.large} color={COLORS.primary} />
     <Text style={styles.actionText}>{text}</Text>
     {unreadMessages > 0 && (
-      <View style={styles.badge}>
-        <Text style={styles.badgeText}>{unreadMessages}</Text>
+      <View style>
+        <Text style={styles.badgeText}></Text>
       </View>
     )}
   </TouchableOpacity>
