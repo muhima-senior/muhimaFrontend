@@ -14,14 +14,23 @@ const BookingDetailsScreen = () => {
   const [appointmentId, setAppointmentId] = useState(id);
   const [appointment, setAppointment] = useState(null);
   const [loading, setLoading] = useState(true);
-  
 
   const handleReview = () => {
+    if (bookingData.status !== 'Completed') {
+        alert('You can only leave a review after the booking is complete.');
+        return;
+    }
     router.push({
-      pathname: 'addreview',
-      params: { appointmentId },
+        pathname: 'addreview',
+        params: { appointmentId },
     });
-  };
+};
+const handleBookAgain = () => {
+  router.push('home');
+};
+
+  
+
 
   const getAppointmentDetails = async () => {
     try {
@@ -109,7 +118,10 @@ const BookingDetailsScreen = () => {
               <Text style={styles.serviceName}>{bookingData.gigId?.title || bookingData.serviceName}</Text>
               <View style={styles.ratingContainer}>
                 <Icon name="star" size={16} color="#FFD700" style={styles.starIcon} />
-                <Text style={styles.rating}>{bookingData.gigId?.rating || bookingData.rating}</Text>
+                <Text style={styles.rating}>
+                {(bookingData.gigId?.rating || bookingData.rating)?.toFixed(1)}
+              </Text>
+
               </View>
               <Text style={styles.price}>{`SAR ${bookingData.total || bookingData.price}`}</Text>
             </View>
@@ -118,12 +130,16 @@ const BookingDetailsScreen = () => {
 
         {/* Enhanced Action Buttons */}
         <View style={styles.actionButtonsContainer}>
-          <TouchableOpacity style={styles.reviewButton} onPress={handleReview}>
-            <Icon name="pencil" size={16} color="#4A90E2" style={styles.buttonIcon} />
-            <Text style={styles.reviewButtonText}>Write a Review</Text>
-          </TouchableOpacity>
+        <TouchableOpacity 
+        style={[styles.reviewButton, bookingData.status !== 'Completed' && styles.disabledButton]} 
+        onPress={handleReview} 
+        disabled={bookingData.status !== 'Completed'}
+    >
+        <Icon name="pencil" size={16} color="#312651" style={styles.buttonIcon} />
+        <Text style={styles.reviewButtonText}>Write a Review</Text>
+    </TouchableOpacity>
           <TouchableOpacity style={styles.bookAgainButton}>
-            <Icon name="calendar-plus-o" size={16} color="#fff" style={styles.buttonIcon} />
+            <Icon name="calendar-plus-o" size={16} color="#fff" style={styles.buttonIcon} onPress={handleBookAgain}/>
             <Text style={styles.bookAgainButtonText}>Book Again</Text>
           </TouchableOpacity>
         </View>
@@ -144,10 +160,10 @@ const BookingDetailsScreen = () => {
             </View>
             <View style={styles.contactIcons}>
               <TouchableOpacity style={styles.contactButton}>
-                <Icon name="phone" size={20} color="#4A90E2" />
+                <Icon name="phone" size={20} color="#312651" />
               </TouchableOpacity>
               <TouchableOpacity style={styles.contactButton}>
-                <Icon name="comment" size={20} color="#4A90E2" />
+                <Icon name="comment" size={20} color="#312651" />
               </TouchableOpacity>
             </View>
           </View>
@@ -156,26 +172,43 @@ const BookingDetailsScreen = () => {
         {/* Enhanced Booking Status Card */}
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>Booking Status</Text>
-          {Array.isArray(bookingData.bookingStatus) ? (
-            bookingData.bookingStatus.map((status, index) => (
-              <View key={index} style={styles.statusItem}>
-                <View style={styles.statusLineContainer}>
-                  <View style={[styles.statusDot, { backgroundColor: '#4A90E2' }]} />
-                  {index !== bookingData.bookingStatus.length - 1 && (
-                    <View style={styles.statusLine} />
-                  )}
-                </View>
-                <View style={styles.statusContent}>
-                  <Text style={styles.statusTitle}>{status.status}</Text>
-                  <Text style={styles.statusDate}>{status.date}</Text>
-                  <Text style={styles.statusDescription}>{status.description}</Text>
-                  <Text style={styles.statusTime}>{status.time}</Text>
-                </View>
+          <View style={styles.statusContainer}>
+            <View style={styles.statusItem}>
+              <View style={[
+                styles.statusDot, 
+                bookingData.status === 'Pending' && styles.pendingStatus,
+                bookingData.status === 'Completed' && styles.completedStatus,
+                bookingData.status === 'Cancelled' && styles.cancelledStatus,
+                bookingData.status === 'Confirmed' && styles.confirmedStatus
+              ]} />
+              <View style={styles.statusTextContainer}>
+                <Text style={styles.statusMainText}>
+                  {bookingData.status || 'Status Not Available'}
+                </Text>
+                {bookingData.status === 'Completed' && (
+                  <Text style={styles.statusSubText}>
+                    Your booking has been successfully completed
+                  </Text>
+                )}
+                {bookingData.status === 'Pending' && (
+                  <Text style={styles.statusSubText}>
+                    Your booking is currently being processed, 
+                    Awaiting confirmation from the Freelancer
+                  </Text>
+                )}
+                {bookingData.status === 'Cancelled' && (
+                  <Text style={styles.statusSubText}>
+                    Your booking has been cancelled
+                  </Text>
+                )}
+                {bookingData.status === 'Confirmed' && (
+                <Text style={styles.statusSubText}>
+                  Your booking has been confirmed and is scheduled
+                </Text>
+              )}
               </View>
-            ))
-          ) : (
-            <Text style={styles.noDataText}>No booking status available.</Text>
-          )}
+            </View>
+          </View>
         </View>
 
         {/* Enhanced Payment Summary Card */}
@@ -314,7 +347,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   reviewButtonText: {
-    color: '#4A90E2',
+    color: COLORS.primary,
     fontWeight: '600',
     fontSize: 16,
   },
@@ -336,7 +369,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: COLORS.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -347,7 +380,7 @@ const styles = StyleSheet.create({
   providerName: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#1a1a1a',
+    color: COLORS.primary,
     marginBottom: 2,
   },
   providerRole: {
@@ -384,7 +417,7 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: '#4A90E2',
+    backgroundColor: COLORS.primary,
   },
   statusLine: {
     width: 2,
@@ -444,7 +477,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: COLORS.primary,
     marginVertical: 12,
   },
   grandTotalRow: {
@@ -455,18 +488,63 @@ const styles = StyleSheet.create({
   grandTotalLabel: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#1a1a1a',
+    color: COLORS.primary,
   },
   grandTotalValue: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#4A90E2',
+    color: COLORS.primary,
   },
   noDataText: {
     fontSize: 15,
     color: '#666',
     fontStyle: 'italic',
   },
+  disabledButton: {
+    backgroundColor: '#ccc',
+    borderColor: '#ccc',
+},
+statusContainer: {
+  backgroundColor: '#f9f9f9',
+  borderRadius: 10,
+  padding: 15,
+},
+statusItem: {
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+statusDot: {
+  width: 16,
+  height: 16,
+  borderRadius: 8,
+  marginRight: 12,
+},
+pendingStatus: {
+  backgroundColor: '#FFA500', // Orange for pending
+},
+completedStatus: {
+  backgroundColor: '#4CAF50', // Green for completed
+},
+cancelledStatus: {
+  backgroundColor: '#F44336', // Red for cancelled
+},
+statusTextContainer: {
+  flex: 1,
+},
+statusMainText: {
+  fontSize: 18,
+  fontWeight: '600',
+  color: '#333',
+  marginBottom: 4,
+},
+statusSubText: {
+  fontSize: 14,
+  color: '#666',
+},
+confirmedStatus: {
+  backgroundColor: COLORS.primary, // Blue for confirmed
+},
+
 });
 
 export default BookingDetailsScreen;
