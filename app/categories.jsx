@@ -9,14 +9,15 @@ import BottomNavBar from '../components/Home/BottomNavbar';
 const CategoriesSection = () => {
   const router = useRouter();
   const { categories } = useGlobalStore();
-  const handleCategorySelection = (categoryName) => {
-    console.log("Category selected: ", categoryName);
+
+  const handleCategorySelection = (category) => {
+    console.log("Category selected: ", category);
     router.push({
       pathname: '/bestservicescreen',  // Ensure this is the correct route to BestServicesScreen
       params: { 
         type: "category", 
-        title: `${categoryName} Services`, 
-        category: categoryName  // Pass category to the next screen
+        title: `${category.name} Services`, // Use category.name in the title
+        category: category.id  // Pass category ID for further use
       },
     });
   };
@@ -27,34 +28,32 @@ const CategoriesSection = () => {
 
   return (
     <SafeAreaView style={styles.container}>
- 
-        <View style={styles.header}>
-                <TouchableOpacity onPress={() => router.back()}>
-                <ArrowLeft color="#000" size={24}  marginTop= {20} />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>All Categories</Text>
-                <View style={{ width: 26 }} />
-        </View>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()}>
+          <ArrowLeft color="#000" size={24} marginTop={20} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>All Categories</Text>
+        <View style={{ width: 26 }} />
+      </View>
       
       <ScrollView style={styles.scrollView}>
         {categories.map((category, index) => (
           <TouchableOpacity 
             key={index} 
             style={styles.categoryItem} 
-            onPress={() => handleCategorySelection(category.name)}
+            onPress={() => handleCategorySelection(category)} // Pass the entire category object
           >
             <View style={styles.iconContainer}>
               <Text style={styles.iconText}>{category.icon}</Text>
             </View>
             <View style={styles.categoryTextContainer}>
               <Text style={styles.categoryName}>{category.name}</Text>
-
             </View>
           </TouchableOpacity>
         ))}
       </ScrollView>
       <BottomNavBar/> 
-      </SafeAreaView>
+    </SafeAreaView>
   );
 };
 
@@ -63,7 +62,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-header: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
@@ -76,7 +75,6 @@ header: {
     fontSize: 18,
     fontWeight: 'bold',
   },
-
   title: {
     fontSize: 18,
     fontWeight: 'bold',

@@ -25,7 +25,7 @@ const CategoriesSection = () => {
       pathname: 'bestservicescreen',
       params: { 
         type: "category", 
-        title: `Services for ${category.name}`, // Use category.name
+        title: `${category.name} Services`, // Use category.name
         category: category.id // Pass category ID
       },
     });
