@@ -61,6 +61,8 @@ const CreateAccountScreen = () => {
       Alert.alert('Success', 'Account created successfully!');
       if (userType == 'Freelancer')
         router.push('Freelancer/createprofile');
+      else if (userType == 'Homeowner')
+        router.push('Homeowner/createProfile');
       else
         router.push('home');
 

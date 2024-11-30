@@ -9,7 +9,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
-  ActivityIndicator // Import ActivityIndicator for the loader
+  ActivityIndicator,
+  SafeAreaView
 } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
@@ -111,74 +112,102 @@ const ChatScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <ArrowLeft color="#000" size={24} />
-        </TouchableOpacity>
-        <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerTitle}>{userType === 'Homeowner' ? freelancerName : homeownerName}</Text>
-        </View>
-      </View>
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardView}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}
+      >
+        <View style={styles.container}>
+          {/* Header */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => router.back()}>
+              <ArrowLeft color="#000" size={24} />
+            </TouchableOpacity>
+            <View style={styles.headerTitleContainer}>
+              <Text style={styles.headerTitle}>
+                {userType === 'Homeowner' ? freelancerName : homeownerName}
+              </Text>
+            </View>
+          </View>
 
-      {/* Loading Indicator */}
-      {isLoading ? (
-        <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#0084ff" />
-        </View>
-      ) : (
-        <FlatList
-          ref={flatListRef}
-          data={messages}
-          renderItem={({ item }) => <MessageBubble message={item} />}
-          keyExtractor={(item, index) => index.toString()}
-          contentContainerStyle={styles.messagesList}
-          onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
-        />
-      )}
+          {/* Messages List */}
+          <View style={styles.messagesContainer}>
+            {isLoading ? (
+              <View style={styles.loaderContainer}>
+                <ActivityIndicator size="large" color="#0084ff" />
+              </View>
+            ) : (
+              <FlatList
+                ref={flatListRef}
+                data={messages}
+                renderItem={({ item }) => <MessageBubble message={item} />}
+                keyExtractor={(item, index) => index.toString()}
+                contentContainerStyle={styles.messagesList}
+                onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
+              />
+            )}
+          </View>
 
-      {/* Message Input */}
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          value={inputText}
-          onChangeText={setInputText}
-          placeholder="Type your message..."
-          multiline
-          maxLength={500}
-        />
-        <TouchableOpacity
-          style={styles.sendButton}
-          onPress={sendMessage}
-          disabled={inputText.trim() === ''}
-        >
-          <Text style={styles.sendButtonText}>Send</Text>
-        </TouchableOpacity>
+          {/* Input Container */}
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              value={inputText}
+              onChangeText={setInputText}
+              placeholder="Type your message..."
+              multiline
+              maxLength={500}
+            />
+            <TouchableOpacity
+              style={[
+                styles.sendButton,
+                { opacity: inputText.trim() === '' ? 0.5 : 1 }
+              ]}
+              onPress={sendMessage}
+              disabled={inputText.trim() === ''}
+            >
+              <Text style={styles.sendButtonText}>Send</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </KeyboardAvoidingView>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  keyboardView: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
   },
   header: {
-    marginTop: 20,
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
+    backgroundColor: '#fff',
+    paddingTop: Platform.OS === 'android' ? 40 : 16,
   },
   headerTitleContainer: {
     marginLeft: 16,
+    flex: 1,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  messagesContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
   },
   loaderContainer: {
     flex: 1,
@@ -187,8 +216,7 @@ const styles = StyleSheet.create({
   },
   messagesList: {
     padding: 16,
-    flexGrow: 1,
-    justifyContent: 'flex-end',
+    paddingBottom: 8,
   },
   messageBubble: {
     maxWidth: '80%',
@@ -230,6 +258,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#ddd',
     backgroundColor: '#fff',
+    paddingBottom: Platform.OS === 'ios' ? 30 : 16,
   },
   input: {
     flex: 1,
@@ -239,6 +268,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     marginRight: 8,
     maxHeight: 100,
+    minHeight: 40,
   },
   sendButton: {
     backgroundColor: '#0084ff',
@@ -246,6 +276,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 8,
     justifyContent: 'center',
+    alignSelf: 'flex-end',
   },
   sendButtonText: {
     color: '#fff',
