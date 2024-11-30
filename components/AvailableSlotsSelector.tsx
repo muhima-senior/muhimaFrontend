@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { COLORS} from '../constants';
 
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const timeSlots = [
@@ -80,7 +81,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
   },
   selectedDayButton: {
-    backgroundColor: '#1E90FF',
+    backgroundColor: COLORS.primary,
   },
   dayButtonText: {
     fontSize: 14,
@@ -104,7 +105,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   selectedTimeSlot: {
-    backgroundColor: '#1E90FF',
+    backgroundColor: COLORS.primary,
   },
   timeSlotText: {
     fontSize: 14,

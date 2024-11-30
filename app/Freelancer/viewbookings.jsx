@@ -15,14 +15,15 @@ const BookingsScreen = () => {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isStatusModalVisible, setStatusModalVisible] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [selectedTab, setSelectedTab] = useState('All'); // New state for selected tab
 
   const fetchBookings = async () => {
     try {
       const response = await axios.get(`${REACT_APP_API_URL_NEW}/api/appointment/freelancer/${userId}`);
       setBookings(response.data);
-      setLoading(false);
     } catch (error) {
       console.error('Error fetching bookings:', error);
+    } finally {
       setLoading(false);
     }
   };
@@ -33,21 +34,17 @@ const BookingsScreen = () => {
 
   const handleUpdateStatus = async (newStatus) => {
     if (!selectedBooking) return;
-    console.log(newStatus)
     setIsUpdating(true);
-    console.log(selectedBooking._id)
-    console.log(newStatus)
+
     try {
       await axios.patch(`${REACT_APP_API_URL_NEW}/api/appointment/updateStatus`, {
         status: newStatus,
-        appointmentId : selectedBooking._id
+        appointmentId: selectedBooking._id,
       });
 
-      setBookings(prevBookings => 
-        prevBookings.map(booking => 
-          booking._id === selectedBooking._id 
-            ? { ...booking, status: newStatus } 
-            : booking
+      setBookings(prevBookings =>
+        prevBookings.map(booking =>
+          booking._id === selectedBooking._id ? { ...booking, status: newStatus } : booking
         )
       );
 
@@ -76,36 +73,22 @@ const BookingsScreen = () => {
         <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>Update Booking Status</Text>
           <Text style={styles.modalSubtitle}>{selectedBooking?.gigTitle}</Text>
-          
           {isUpdating ? (
             <ActivityIndicator size="large" color={COLORS.primary} />
           ) : (
             <View style={styles.statusButtonsWrapper}>
-              <TouchableOpacity 
-                style={[styles.statusButton, styles.confirmedButton]}
-                onPress={() => handleUpdateStatus('Confirmed')}
-              >
+              <TouchableOpacity style={[styles.statusButton, styles.confirmedButton]} onPress={() => handleUpdateStatus('Confirmed')}>
                 <Text style={styles.statusButtonText}>Confirm</Text>
               </TouchableOpacity>
-              <TouchableOpacity 
-                style={[styles.statusButton, styles.completedButton]}
-                onPress={() => handleUpdateStatus('Completed')}
-              >
+              <TouchableOpacity style={[styles.statusButton, styles.completedButton]} onPress={() => handleUpdateStatus('Completed')}>
                 <Text style={styles.statusButtonText}>Complete</Text>
               </TouchableOpacity>
-              <TouchableOpacity 
-                style={[styles.statusButton, styles.cancelButton]}
-                onPress={() => handleUpdateStatus('Cancelled')}
-              >
+              <TouchableOpacity style={[styles.statusButton, styles.cancelButton]} onPress={() => handleUpdateStatus('Cancelled')}>
                 <Text style={styles.statusButtonText}>Cancel</Text>
               </TouchableOpacity>
             </View>
           )}
-          
-          <TouchableOpacity 
-            style={styles.closeModalButton}
-            onPress={() => setStatusModalVisible(false)}
-          >
+          <TouchableOpacity style={styles.closeModalButton} onPress={() => setStatusModalVisible(false)}>
             <Text style={styles.closeModalButtonText}>Close</Text>
           </TouchableOpacity>
         </View>
@@ -125,9 +108,7 @@ const BookingsScreen = () => {
         {item.appointmentDates.map((appointment, index) => (
           <View style={styles.detailRow} key={index}>
             <Ionicons name="calendar-outline" size={16} color={COLORS.primary} />
-            <Text style={styles.detailText}>
-              {appointment.date} at {appointment.time}
-            </Text>
+            <Text style={styles.detailText}>{appointment.date} at {appointment.time}</Text>
           </View>
         ))}
         <View style={styles.detailRow}>
@@ -141,16 +122,11 @@ const BookingsScreen = () => {
   const StatusBadge = ({ status }) => {
     const getStatusStyle = (status) => {
       switch (status.toLowerCase()) {
-        case 'pending':
-          return { backgroundColor: COLORS.secondary };
-        case 'confirmed':
-          return { backgroundColor: COLORS.primary };
-        case 'completed':
-          return { backgroundColor: COLORS.green };
-        case 'cancelled':
-          return { backgroundColor: COLORS.red };
-        default:
-          return { backgroundColor: COLORS.gray };
+        case 'pending': return { backgroundColor: COLORS.yellow };
+        case 'confirmed': return { backgroundColor: COLORS.primary };
+        case 'completed': return { backgroundColor: COLORS.secondary };
+        case 'cancelled': return { backgroundColor: COLORS.tertiary };
+        default: return { backgroundColor: COLORS.gray };
       }
     };
 
@@ -161,16 +137,17 @@ const BookingsScreen = () => {
     );
   };
 
+  const filterBookingsByStatus = () => {
+    if (selectedTab === 'All') return bookings;
+    return bookings.filter(booking => booking.status.toLowerCase() === selectedTab.toLowerCase());
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <Stack.Screen
-        options={{
-          headerShadowVisible: false,
-          headerShown: false,
-        }}
-      />
+      <Stack.Screen options={{ headerShown: false }} />
       <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
-      
+
+      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color={COLORS.white} />
@@ -178,6 +155,16 @@ const BookingsScreen = () => {
         <Text style={styles.headerTitle}>My Bookings</Text>
       </View>
 
+      {/* Tab Navigation */}
+      <View style={styles.tabContainer}>
+        {['All', 'Pending', 'Confirmed', 'Completed', 'Cancelled'].map(tab => (
+          <TouchableOpacity key={tab} style={styles.tabButton} onPress={() => setSelectedTab(tab)}>
+            <Text style={selectedTab === tab ? styles.activeTabText : styles.inactiveTabText}>{tab}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* Booking List */}
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={COLORS.primary} />
@@ -185,15 +172,11 @@ const BookingsScreen = () => {
         </View>
       ) : (
         <FlatList
-          data={bookings}
+          data={filterBookingsByStatus()}
           renderItem={renderBookingItem}
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.listContent}
-          ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>No bookings found</Text>
-            </View>
-          }
+          ListEmptyComponent={<Text style={styles.emptyText}>No bookings found</Text>}
         />
       )}
 
@@ -202,37 +185,55 @@ const BookingsScreen = () => {
   );
 };
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.lightWhite,
+    backgroundColor: COLORS.white,
   },
   header: {
     backgroundColor: COLORS.primary,
-    paddingVertical: SIZES.medium,
-    paddingHorizontal: SIZES.medium,
     flexDirection: 'row',
     alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 16,
   },
   backButton: {
-    marginRight: SIZES.medium,
+    marginRight: 8,
   },
   headerTitle: {
-    fontFamily: FONT.bold,
-    fontSize: SIZES.xLarge,
     color: COLORS.white,
+    fontSize: SIZES.large,
+    fontFamily: FONT.bold,
   },
-  listContent: {
-    padding: SIZES.medium,
+  tabContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 12,
+    backgroundColor: COLORS.lightGray,
+  },
+  tabButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  activeTabText: {
+    fontSize: SIZES.medium,
+    fontFamily: FONT.bold,
+    color: COLORS.primary,
+  },
+  inactiveTabText: {
+    fontSize: SIZES.medium,
+    fontFamily: FONT.medium,
+    color: COLORS.gray,
   },
   bookingCard: {
     backgroundColor: COLORS.white,
     borderRadius: SIZES.small,
-    marginBottom: SIZES.medium,
-    padding: SIZES.medium,
-    shadowColor: COLORS.gray,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: COLORS.black,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
   },
@@ -240,96 +241,75 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SIZES.small,
+    marginBottom: 8,
   },
   bookingTitle: {
-    fontFamily: FONT.bold,
     fontSize: SIZES.medium,
-    color: COLORS.darkGray,
-    flex: 1,
-    marginRight: SIZES.small,
-  },
-  statusBadge: {
-    paddingHorizontal: SIZES.small,
-    paddingVertical: 4,
-    borderRadius: SIZES.xSmall,
-  },
-  statusText: {
-    fontFamily: FONT.medium,
-    fontSize: SIZES.small,
-    color: COLORS.white,
+    fontFamily: FONT.bold,
+    color: COLORS.primary,
   },
   bookingDetails: {
-    marginTop: SIZES.small,
+    marginTop: 8,
   },
   detailRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: SIZES.xSmall,
+    marginBottom: 4,
   },
   detailText: {
-    marginLeft: SIZES.small,
-    fontFamily: FONT.medium,
+    marginLeft: 8,
     fontSize: SIZES.small,
-    color: COLORS.gray,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
     fontFamily: FONT.medium,
-    fontSize: SIZES.medium,
-    color: COLORS.gray,
-    marginTop: SIZES.small,
+    color: COLORS.darkGray,
   },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: SIZES.xLarge,
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: SIZES.small,
   },
-  emptyText: {
-    fontFamily: FONT.medium,
-    fontSize: SIZES.large,
-    color: COLORS.gray,
+  statusText: {
+    color: COLORS.white,
+    fontSize: SIZES.small,
+    fontFamily: FONT.bold,
+    textAlign: 'center',
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalContainer: {
-    width: '85%',
+    width: '80%',
     backgroundColor: COLORS.white,
     borderRadius: SIZES.medium,
-    padding: SIZES.large,
+    padding: 24,
+    alignItems: 'center',
   },
   modalTitle: {
-    fontFamily: FONT.bold,
     fontSize: SIZES.large,
-    color: COLORS.darkGray,
-    marginBottom: SIZES.small,
-    textAlign: 'center',
+    fontFamily: FONT.bold,
+    color: COLORS.primary,
+    marginBottom: 16,
   },
   modalSubtitle: {
-    fontFamily: FONT.medium,
     fontSize: SIZES.medium,
-    color: COLORS.gray,
-    marginBottom: SIZES.medium,
-    textAlign: 'center',
+    fontFamily: FONT.medium,
+    color: COLORS.darkGray,
+    marginBottom: 16,
   },
   statusButtonsWrapper: {
-    marginVertical: SIZES.medium,
-    gap: SIZES.small,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 16,
   },
   statusButton: {
-    padding: SIZES.medium,
+    flex: 1,
+    paddingVertical: 12,
+    marginHorizontal: 4,
     borderRadius: SIZES.small,
     alignItems: 'center',
-    marginBottom: SIZES.xSmall,
   },
   confirmedButton: {
     backgroundColor: COLORS.primary,
@@ -342,18 +322,42 @@ const styles = StyleSheet.create({
   },
   statusButtonText: {
     color: COLORS.white,
+    fontSize: SIZES.small,
     fontFamily: FONT.bold,
-    fontSize: SIZES.medium,
   },
   closeModalButton: {
-    marginTop: SIZES.small,
-    padding: SIZES.small,
+    backgroundColor: COLORS.lightGray,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: SIZES.small,
     alignItems: 'center',
   },
   closeModalButtonText: {
-    color: COLORS.primary,
-    fontFamily: FONT.medium,
     fontSize: SIZES.medium,
+    fontFamily: FONT.medium,
+    color: COLORS.darkGray,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 8,
+    fontSize: SIZES.medium,
+    fontFamily: FONT.medium,
+    color: COLORS.darkGray,
+  },
+  listContent: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+  },
+  emptyText: {
+    textAlign: 'center',
+    fontSize: SIZES.medium,
+    fontFamily: FONT.medium,
+    color: COLORS.gray,
+    marginTop: 20,
   },
 });
 

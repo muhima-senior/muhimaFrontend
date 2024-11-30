@@ -84,7 +84,7 @@ const FreelancerHomePage = () => {
   const handleViewBookings = () => router.push('Freelancer/viewbookings');
   const handleMessages = () => router.push('message');
   const handleEarnings = () => router.push('Freelancer/earnings');
-  const handleAvailability = () => router.push('AvailabilityScreen');
+  const handleAvailability = () => router.push('Freelancer/slots');
   const handleReviews = () => router.push('Freelancer/viewreviews');
   const handleAddService = () => router.push('Freelancer/createservice');
 
@@ -136,8 +136,8 @@ const FreelancerHomePage = () => {
                 <View style={styles.serviceDetails}>
                   <View style={styles.ratingContainer}>
                     <Ionicons name="star" size={14} color={COLORS.primary} />
-                    <Text style={styles.ratingText}>{service.averageRating || 0}</Text>
-                    <Text style={styles.ratingCount}>({service.reviewCount || 0})</Text>
+                    <Text style={styles.ratingText}>{service.rating || 0}</Text>
+                    <Text style={styles.ratingCount}>({service.ratingCount || 0})</Text>
                   </View>
                   <Text style={styles.currentPrice}>SAR {service.price}</Text>
                 </View>
