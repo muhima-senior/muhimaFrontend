@@ -85,7 +85,7 @@ const handleBookAgain = () => {
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#4A90E2" />
+        <ActivityIndicator size="large" color="#312651" />
       </View>
     );
   }

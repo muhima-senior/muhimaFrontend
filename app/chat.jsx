@@ -135,7 +135,7 @@ const ChatScreen = () => {
           <View style={styles.messagesContainer}>
             {isLoading ? (
               <View style={styles.loaderContainer}>
-                <ActivityIndicator size="large" color="#0084ff" />
+                <ActivityIndicator size="large" color="#312651" />
               </View>
             ) : (
               <FlatList
