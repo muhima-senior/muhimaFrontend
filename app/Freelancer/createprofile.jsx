@@ -26,7 +26,6 @@ const CreateProfileScreen = () => {
     monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [], sunday: []
   });
   const { userId, setUserId, categories } = useGlobalStore();
-  console.log(categories);
 
   const [phoneNumber, setPhoneNumber] = useState('');
   const [profilePicture, setProfilePicture] = useState(null);
