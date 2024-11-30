@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
-    backgroundColor: '#4169E1',
+    backgroundColor: '#312651',
     borderRadius: width * 0.08,
     paddingVertical: height * 0.02,
     paddingHorizontal: width * 0.1,
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   freelancerLink: {
-    color: '#4169E1',
+    color: '#312651',
     fontSize: width * 0.04,
     textDecorationLine: 'underline',
   },

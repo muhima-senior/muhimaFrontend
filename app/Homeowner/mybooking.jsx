@@ -43,10 +43,10 @@ const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
         case 'confirmed':
             return COLORS.secondary;
-        case 'canceled':
-            return COLORS.tertiary;
+        case 'cancelled':
+            return COLORS.red;
         case 'completed':
-            return COLORS.primary;
+            return COLORS.green;
         default:
             return COLORS.gray2;
     }
@@ -69,6 +69,7 @@ const BookingsScreen = () => {
             }
             const response = await axios.get(url);
             setBookings(response.data);
+           
         } catch (error) {
             console.error('Error fetching bookings:', error);
         } finally {

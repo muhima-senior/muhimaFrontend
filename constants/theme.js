@@ -6,10 +6,12 @@ const COLORS = {
   yellow: "#FFC000",
   gray: "#83829A",
   gray2: "#C1C0C8",
+  red: "#DC143C",
 
   white: "#F3F4F8",
   lightWhite: "#FAFAFC",
   black: "#000000",
+  green:"#013220",
 };
 
 const FONT = {
