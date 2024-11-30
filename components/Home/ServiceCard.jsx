@@ -47,8 +47,8 @@ const ServiceCard = ({ service, cardWidth = 0.7, cardMargin = 16 }) => {
       )}
       <View style={styles.content}>
         <View style={styles.ratingContainer}>
-          <Text>{service?.rating || 0}</Text>
-          <Text style={styles.ratingCount}>({service?.ratingCount || 0} Reviews)</Text>
+          <Text>{service?.rating.toFixed(2) || 0}</Text>
+          <Text style={styles.ratingCount}>({(service?.ratingCount || 0)} Reviews)</Text>
         </View>
         <Text style={styles.title}>{service?.title || 'Untitled Service'}</Text>
         <View style={styles.priceContainer}>
