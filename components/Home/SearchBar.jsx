@@ -11,7 +11,7 @@ const SearchBar = () => {
         placeholder="Search"
         placeholderTextColor="#999"
       />
-      <Mic color="#999" size={20} style={styles.micIcon} />
+    
     </View>
   );
 };
