@@ -34,7 +34,7 @@ const EditProfileScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { userId } = useGlobalStore();
   const router = useRouter();
-  const [ homeowner, setHomeowner] = useState(null)
+  const [homeowner, setHomeowner] = useState(null);
 
   // Fetch existing profile data on component mount
   useEffect(() => {
@@ -42,12 +42,10 @@ const EditProfileScreen = () => {
       try {
         setIsLoading(true);
         const response = await axios.get(`${REACT_APP_API_URL_NEW}/api/homeowner/user/${userId}`);
-        //const { mobileNumber, address, profilePicture } = response.data;
         setHomeowner(response.data);
-      //  setPhoneNumber(mobileNumber || '');
-        //setAddress(address || '');
-       // setProfilePicture(profilePicture);
-      
+        // Initialize the local state with the fetched data
+        setPhoneNumber(response.data.mobileNumber || '');
+        setAddress(response.data.address || '');
       } catch (error) {
         console.error('Error fetching profile data:', error);
         Alert.alert('Error', 'Failed to load profile information.');
@@ -100,7 +98,7 @@ const EditProfileScreen = () => {
     if (number.trim() === '') {
       setPhoneNumberError('Phone number is required');
     } else if (!validatePhoneNumber(number)) {
-      setPhoneNumberError('Please enter a valid phone number');
+      setPhoneNumberError('Please enter a valid phone number 10-14 digits');
     } else {
       setPhoneNumberError('');
     }
@@ -140,7 +138,8 @@ const EditProfileScreen = () => {
       }
 
       const api = axios.create({ baseURL: REACT_APP_API_URL_NEW });
-      await api.put(`/api/homeowner/${userId}`, formData, {
+      console.log(formData)
+      await api.patch(`/api/homeowner/update`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -157,7 +156,7 @@ const EditProfileScreen = () => {
     }
   };
 
-  return (
+ return (
     <SafeAreaView style={styles.container}>
       <Stack.Screen
         options={{
@@ -189,25 +188,24 @@ const EditProfileScreen = () => {
           style={styles.profilePictureContainer} 
           onPress={pickImage}
         >
-        
-        {homeowner?.pictureData ? (
+          {homeowner?.pictureData ? (
             <Base64Image
-                base64String={homeowner.pictureData}
-                style={styles.profilePicture}
+              base64String={homeowner.pictureData}
+              style={styles.profilePicture}
             />
-            ) : (
+          ) : (
             <LinearGradient
-                colors={[COLORS.primary, COLORS.secondary]}
-                style={styles.profilePicturePlaceholder}
+              colors={[COLORS.primary, COLORS.secondary]}
+              style={styles.profilePicturePlaceholder}
             >
-                <Ionicons 
+              <Ionicons 
                 name="person" 
                 size={60} 
                 color={COLORS.black} 
-                />
-                <Text style={styles.profilePictureText}>Edit Photo</Text>
+              />
+              <Text style={styles.profilePictureText}>Edit Photo</Text>
             </LinearGradient>
-            )}
+          )}
           <View style={styles.editIconContainer}>
             <Ionicons name="pencil" size={16} color={COLORS.black} />
           </View>
@@ -218,14 +216,13 @@ const EditProfileScreen = () => {
           <Text style={styles.fieldLabel}>Phone Number</Text>
           <View style={styles.inputContainer}>
             <Ionicons name="call-outline" size={20} color={COLORS.gray} style={styles.inputIcon} />
-             <TextInput
+            <TextInput
               style={[styles.input, phoneNumberError ? styles.inputError : null]}
               placeholder="Enter your phone number"
-              value={homeowner?.mobileNumber || ''}
+              value={phoneNumber}
               onChangeText={handlePhoneNumberChange}
               keyboardType="phone-pad"
             />
-
           </View>
           {phoneNumberError ? <Text style={styles.errorText}>{phoneNumberError}</Text> : null}
         </View>
@@ -236,14 +233,13 @@ const EditProfileScreen = () => {
           <View style={styles.inputContainer}>
             <Ionicons name="location-outline" size={20} color={COLORS.gray} style={styles.inputIcon} />
             <TextInput
-            style={[styles.input, addressError ? styles.inputError : null]}
-            placeholder="Enter your address"
-            value={homeowner?.address || ''}
-            onChangeText={handleAddressChange}
-            multiline={true}
-            numberOfLines={2}
-          />
-
+              style={[styles.input, addressError ? styles.inputError : null]}
+              placeholder="Enter your address"
+              value={address}
+              onChangeText={handleAddressChange}
+              multiline={true}
+              numberOfLines={2}
+            />
           </View>
           {addressError ? <Text style={styles.errorText}>{addressError}</Text> : null}
         </View>
