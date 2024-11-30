@@ -43,7 +43,7 @@ const ManageAvailableSlotsScreen = () => {
 
   const saveAvailableSlots = async () => {
     try {
-      await axios.put(`${REACT_APP_API_URL_NEW}/api/freelancer`, {
+      await axios.patch(`${REACT_APP_API_URL_NEW}/api/freelancer/updateSlot`, {
         userId,
         availableSlots
       });
