@@ -23,7 +23,7 @@ export const GlobalStoreProvider = ({ children }) => {
         { id: '7', name: "Hair Dresser", icon: '💇' },
         { id: '8', name: 'Pool Maintainance', icon: '🏊'},
         { id: '3', name: 'Gardener', icon: '👨‍🌾'},
-
+        { id: '9', name: 'Painter', icon: '🎨'},
       ];      
     const value = {
         user,

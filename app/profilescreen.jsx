@@ -1,103 +1,97 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Switch, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, ScrollView, ActivityIndicator } from 'react-native';
 import { Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import axios from 'axios';
 import BottomNavBar from '../components/Home/BottomNavbar';
+import Base64Image from '@/components/Base64Image';
+import { useGlobalStore } from './store/GlobalStore';
 
 const ProfileScreen = () => {
-  const [isDarkMode, setIsDarkMode] = React.useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [homeowner, setHomeowner] = useState({});
   const router = useRouter();
-  const toggleDarkMode = () => {
-setIsDarkMode(!isDarkMode);
-  };
+  const { userId,user } = useGlobalStore();
+  const API_URL = `${process.env.REACT_APP_API_URL_NEW}/api/homeowner/user/${userId}`;
+
+  const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get(API_URL);
+        setHomeowner(response.data);
+      } catch (error) {
+        console.error('Error fetching profile data:', error);
+        Alert.alert('Error', 'Failed to load profile information.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProfileData();
+  }, [API_URL]);
 
   const handleNavigation = (screen) => {
     const currentRoute = router.pathname;
 
-  switch (screen) {
-    case 'EditProfile':
-      if (currentRoute !== '/editprofile') {
-        router.push('/ProfilePages/editprofile');
-      }
-      break;
-    case 'ChangePassword':
-      if (currentRoute !== '/changepass') {
-        router.push('/ProfilePages/changepass');
-      }
-      break;
-    case 'MyBookings':
-      if (currentRoute !== '/mybooking') {
-        router.push({
-          pathname: 'mybooking',
-          params: { type: 'homeowner' },
-        });
-      }
-      break;
-    case 'PrivacyPolicy':
-      if (currentRoute !== '/privacy') {
-        router.push('/ProfilePages/privacy');
-      }
-      break;
-    case 'TermsConditions':
-      if (currentRoute !== '/terms') {
-        router.push('/ProfilePages/terms');
-      }
-      break;
-    case 'Logout':
-      if (currentRoute !== '/signinscreen') {
-        router.push('/signinscreen');
-      }
-      break;
-    default:
-      console.warn(`Unknown route: ${screen}`);
-  }
+    const routes = {
+      EditProfile: '/ProfilePages/editprofile',
+      ChangePassword: '/ProfilePages/changepass',
+      MyBookings: { pathname: 'mybooking', params: { type: 'homeowner' } },
+      PrivacyPolicy: '/ProfilePages/privacy',
+      TermsConditions: '/ProfilePages/terms',
+      Logout: '/signinscreen',
+    };
 
+    const route = routes[screen];
+    if (route && currentRoute !== route) {
+      router.push(route);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#007bff" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.profileHeader}>
-          <Image
-            source={{ uri: 'https://via.placeholder.com/150' }} // Replace with actual profile picture URL
-            style={styles.profileImage}
-          />
-          <TouchableOpacity style={styles.cameraIcon}>
-            <Ionicons name="camera" size={18} color="#fff" />
-          </TouchableOpacity>
-          <Text style={styles.profileName}>Mudassir</Text>
+          {homeowner?.pictureData ? (
+            <Base64Image base64String={homeowner.pictureData} style={styles.profileImage} />
+          ) : (
+            <TouchableOpacity style={styles.cameraIcon}>
+              <Ionicons name="camera" size={18} color="#fff" />
+            </TouchableOpacity>
+          )}
+          <Text style={styles.profileName}>{user || 'Guest User'}</Text>
         </View>
 
         <View style={styles.optionsContainer}>
-          <TouchableOpacity style={styles.option} onPress={() => handleNavigation('EditProfile')}>
-            <Ionicons name="create-outline" size={24} color="#333" />
-            <Text style={styles.optionText}>Edit Profile</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.option} onPress={() => handleNavigation('ChangePassword')}>
-            <Ionicons name="lock-closed-outline" size={24} color="#333" />
-            <Text style={styles.optionText}>Change Password</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.option} onPress={() => handleNavigation('MyBookings')}>
-            <MaterialIcons name="event-note" size={24} color="#333" />
-            <Text style={styles.optionText}>My Bookings</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.option} onPress={() => handleNavigation('PrivacyPolicy')}>
-            <FontAwesome name="shield" size={24} color="#333" />
-            <Text style={styles.optionText}>Privacy Policy</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.option} onPress={() => handleNavigation('TermsConditions')}>
-            <MaterialIcons name="gavel" size={24} color="#333" />
-            <Text style={styles.optionText}>Terms & Conditions</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={[styles.option, styles.logoutOption]} onPress={() => handleNavigation('Logout')}>
-            <Ionicons name="log-out-outline" size={24} color="#ff4d4d" />
-            <Text style={[styles.optionText, styles.logoutText]}>Logout</Text>
-          </TouchableOpacity>
+          {[
+            { screen: 'EditProfile', icon: 'create-outline', text: 'Edit Profile' },
+            { screen: 'ChangePassword', icon: 'lock-closed-outline', text: 'Change Password' },
+            { screen: 'MyBookings', icon: 'event-note', text: 'My Bookings' },
+            { screen: 'PrivacyPolicy', icon: 'shield', text: 'Privacy Policy' },
+            { screen: 'TermsConditions', icon: 'gavel', text: 'Terms & Conditions' },
+            { screen: 'Logout', icon: 'log-out-outline', text: 'Logout', color: '#ff4d4d' },
+          ].map(({ screen, icon, text, color }, idx) => (
+            <TouchableOpacity
+              key={idx}
+              style={[styles.option, screen === 'Logout' && styles.logoutOption]}
+              onPress={() => handleNavigation(screen)}
+            >
+              <Ionicons name={icon} size={24} color={color || '#333'} />
+              <Text style={[styles.optionText, screen === 'Logout' && styles.logoutText]}>{text}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
       </ScrollView>
       <BottomNavBar />
@@ -108,6 +102,12 @@ setIsDarkMode(!isDarkMode);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f8f9fa',
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: '#f8f9fa',
   },
   profileHeader: {
@@ -122,12 +122,10 @@ const styles = StyleSheet.create({
     borderRadius: 40,
   },
   cameraIcon: {
-    position: 'absolute',
-    bottom: 50,
-    right: 140,
     backgroundColor: '#007bff',
     borderRadius: 15,
     padding: 5,
+    marginBottom: 10,
   },
   profileName: {
     fontSize: 18,
@@ -160,18 +158,6 @@ const styles = StyleSheet.create({
   },
   logoutText: {
     color: '#ff4d4d',
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#eaeaea',
-  },
-  navItem: {
-    alignItems: 'center',
   },
 });
 

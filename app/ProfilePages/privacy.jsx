@@ -1,10 +1,26 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { ArrowLeft } from 'lucide-react-native';
+import { useRouter } from "expo-router";
+import { COLORS, FONT, SIZES, SHADOWS } from '../../constants/theme';
 
 const Privacy = () => {
+  const router = useRouter();
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Privacy Policy</Text>
+      {/* Header Section */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()}>
+          <ArrowLeft color={COLORS.black} size={24} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Privacy Policy</Text>
+        <View style={{ width: 24 }}>
+          {/* Placeholder for spacing */}
+        </View>
+      </View>
+
+      {/* Content Section */}
       <ScrollView>
         <Text style={styles.content}>
           Your privacy is important to us. This Privacy Policy explains how we collect, use, and protect your information:
@@ -30,20 +46,29 @@ const Privacy = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    padding: 16,
+    backgroundColor: COLORS.white,
   },
   header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    color: '#333',
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.gray2,
+  },
+  headerTitle: {
+    flex: 1,
     textAlign: 'center',
+    fontSize: SIZES.large,
+    fontFamily: FONT.bold,
+    color: COLORS.black,
   },
   content: {
-    fontSize: 16,
+    fontSize: SIZES.medium,
     lineHeight: 24,
-    color: '#555',
+    paddingHorizontal: 16,
+    paddingTop: 20,
+    fontFamily: FONT.regular,
+    color: COLORS.gray,
   },
 });
 

@@ -218,13 +218,14 @@ const EditProfileScreen = () => {
           <Text style={styles.fieldLabel}>Phone Number</Text>
           <View style={styles.inputContainer}>
             <Ionicons name="call-outline" size={20} color={COLORS.gray} style={styles.inputIcon} />
-            <TextInput
+             <TextInput
               style={[styles.input, phoneNumberError ? styles.inputError : null]}
               placeholder="Enter your phone number"
-              value={homeowner.mobileNumber}
+              value={homeowner?.mobileNumber || ''}
               onChangeText={handlePhoneNumberChange}
               keyboardType="phone-pad"
             />
+
           </View>
           {phoneNumberError ? <Text style={styles.errorText}>{phoneNumberError}</Text> : null}
         </View>
@@ -235,13 +236,14 @@ const EditProfileScreen = () => {
           <View style={styles.inputContainer}>
             <Ionicons name="location-outline" size={20} color={COLORS.gray} style={styles.inputIcon} />
             <TextInput
-              style={[styles.input, addressError ? styles.inputError : null]}
-              placeholder="Enter your address"
-              value={homeowner.address}
-              onChangeText={handleAddressChange}
-              multiline={true}
-              numberOfLines={2}
-            />
+            style={[styles.input, addressError ? styles.inputError : null]}
+            placeholder="Enter your address"
+            value={homeowner?.address || ''}
+            onChangeText={handleAddressChange}
+            multiline={true}
+            numberOfLines={2}
+          />
+
           </View>
           {addressError ? <Text style={styles.errorText}>{addressError}</Text> : null}
         </View>
