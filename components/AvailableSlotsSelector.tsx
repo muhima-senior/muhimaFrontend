@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 20,
-    backgroundColor: COLORS.primary,
+    backgroundColor: "#FFFFFF",
   },
   selectedDayButton: {
     backgroundColor: COLORS.primary,
