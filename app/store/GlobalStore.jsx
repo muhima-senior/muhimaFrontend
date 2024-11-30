@@ -20,10 +20,9 @@ export const GlobalStoreProvider = ({ children }) => {
         { id: '4', name: 'Electrician', icon: '⚡' },
         { id: '5', name: 'AC Repair', icon: '❄️'},
         { id: '6', name: 'Plumber', icon: '🔧'},
-        { id: '7', name: "Hair Dresser", icon: '💇' },
         { id: '8', name: 'Pool Maintainance', icon: '🏊'},
         { id: '3', name: 'Gardener', icon: '👨‍🌾'},
-        { id: '9', name: 'Painter', icon: '🎨'},
+        { id: '7', name: 'Painter', icon: '🎨'},
       ];      
     const value = {
         user,
