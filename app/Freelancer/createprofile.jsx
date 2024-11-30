@@ -13,28 +13,8 @@ import axios from 'axios';
 import { useGlobalStore } from '../store/GlobalStore';
 
 
-const getIconForCategory = (category) => {
-  switch (category) {
-    case 'electrician':
-      return 'bulb-outline';
-    case 'painter':
-      return 'color-palette-outline';
-    case 'cleaner':
-      return 'Brush-outline';
-    case 'hairdresser':
-      return 'cut-outline';
-    case 'ac_repair':
-      return 'construct-outline';
-    case 'plumber':
-      return 'water-outline';
-    case 'carpenter':
-      return 'hammer-outline';
-    case 'gardener':
-      return 'leaf-outline';
-    default:
-      return 'help-outline';
-  }
-};
+
+
 
 const CreateProfileScreen = () => {
 
@@ -46,6 +26,7 @@ const CreateProfileScreen = () => {
     monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [], sunday: []
   });
   const { userId, setUserId, categories } = useGlobalStore();
+  console.log(categories);
 
   const [phoneNumber, setPhoneNumber] = useState('');
   const [profilePicture, setProfilePicture] = useState(null);
@@ -281,8 +262,7 @@ const CreateProfileScreen = () => {
           <Text style={styles.errorText}>{phoneNumberError}</Text>
         ) : null}
 
-        <Text style={styles.fieldLabel}>Select Service Category</Text>
-
+<Text style={styles.fieldLabel}>Select Service Category</Text>
         <DropDownPicker
           listMode="SCROLLVIEW"
           open={openCategory}
@@ -290,16 +270,11 @@ const CreateProfileScreen = () => {
           items={categories.map((category) => ({
             label: (
               <View style={styles.categoryItem}>
-                <Ionicons
-                  name={getIconForCategory(category.value)}
-                  size={24}
-                  color="#1E90FF"
-                  style={styles.categoryIcon}
-                />
-                <Text style={styles.categoryLabel}>{category.label}</Text>
+                <Text style={styles.categoryIcon}>{category.icon}</Text>
+                <Text style={styles.categoryLabel}>{category.name}</Text>
               </View>
             ),
-            value: category.value,
+            value: category.id, // Pass ID as value
           }))}
           setOpen={setOpenCategory}
           setValue={setSelectedCategory}
@@ -316,7 +291,6 @@ const CreateProfileScreen = () => {
             <Ionicons name="chevron-down-outline" size={24} color="#333333" />
           )}
         />
-
         <Text style={styles.fieldLabel}>Certification (Optional)</Text>
         <TextInput
           style={styles.input}
