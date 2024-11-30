@@ -15,13 +15,15 @@ export const GlobalStoreProvider = ({ children }) => {
     const [userType, setUserType] = useState(null);
     const [userId, setUserId] = useState(null);
     const categories = [
-        { id: '1', name: 'Carpenter', icon: '🔧'},
+        { id: '1', name: 'Carpenter', icon: '🪚'},
         { id: '2', name: 'Cleaner', icon: '🧹'},
-        { id: '3', name: 'Painter', icon: '🎨'},
         { id: '4', name: 'Electrician', icon: '⚡' },
         { id: '5', name: 'AC Repair', icon: '❄️'},
         { id: '6', name: 'Plumber', icon: '🔧'},
-        { id: '7', name: "Gardener", icon: '💇' }
+        { id: '7', name: "Hair Dresser", icon: '💇' },
+        { id: '8', name: 'Pool Maintainance', icon: '🏊'},
+        { id: '3', name: 'Gardener', icon: '👨‍🌾'},
+
       ];      
     const value = {
         user,
