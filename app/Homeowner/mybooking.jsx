@@ -86,6 +86,7 @@ const BookingsScreen = () => {
                 <TouchableOpacity onPress={() => router.back()}>
                     <ArrowLeft color={COLORS.black} size={24} />
                 </TouchableOpacity>
+             
                 <Text style={styles.headerTitle}>My Bookings</Text>
                 <View style={{ width: 24 }} />
             </View>
