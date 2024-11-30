@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -12,7 +12,8 @@ import {
   KeyboardAvoidingView,
   Alert,
   Keyboard,
-  ActivityIndicator
+  ActivityIndicator,
+  Dimensions
 } from 'react-native';
 import { Stack, useRouter } from "expo-router";
 import { Ionicons } from '@expo/vector-icons';
@@ -23,6 +24,7 @@ import axios from 'axios';
 import { REACT_APP_API_URL_NEW } from '@env';
 import { useGlobalStore } from '../store/GlobalStore';
 
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const getIconForCategory = (category) => {
   const iconMap = {
@@ -48,10 +50,15 @@ const CreateServiceScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [serviceImage, setServiceImage] = useState(null);
   const { userId, setUserId, categories } = useGlobalStore();
+  const mappedCategories = categories.map(category => ({
+    label: `${category.name} ${category.icon}`,
+    value: category.id
+  }));
 
   // UI state
   const [openCategory, setOpenCategory] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [scrollEnabled, setScrollEnabled] = useState(true);
 
   // Form validation state
   const [errors, setErrors] = useState({
@@ -61,6 +68,16 @@ const CreateServiceScreen = () => {
     category: '',
     image: ''
   });
+
+  const onDropdownOpen = useCallback(() => {
+    setScrollEnabled(false);
+    setOpenCategory(true);
+  }, []);
+
+  const onDropdownClose = useCallback(() => {
+    setScrollEnabled(true);
+    setOpenCategory(false);
+  }, []);
 
   const validateForm = () => {
     let isValid = true;
@@ -149,7 +166,7 @@ const CreateServiceScreen = () => {
         type
       });
     }
-    formData.append('userId', userId)
+    formData.append('userId', userId);
     formData.append('title', serviceTitle.trim());
     formData.append('description', serviceDescription.trim());
     formData.append('price', parseFloat(servicePrice));
@@ -166,41 +183,35 @@ const CreateServiceScreen = () => {
       return;
     }
 
-    //setIsLoading(true);
+    setIsLoading(true);
 
     try {
       const formData = createFormData(serviceImage);
-
       const api = axios.create({ baseURL: REACT_APP_API_URL_NEW });
-
       const apiResponse = await api.post('/api/service', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-
       if (apiResponse.status === 201) {
-        console.log('Service created successfully');
-      } else {
-        console.log('Unexpected status code:', apiResponse.status);
-      }
-      var data = (new Array(6666145 >> 2)).fill(0)
-      data = apiResponse.data
-      Alert.alert(
-        'Success',
-        'Service created successfully!',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              router.back({
-                params: { newService: data }
-              });
+        Alert.alert(
+          'Success',
+          'Service created successfully!',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                router.back({
+                  params: { newService: apiResponse.data }
+                });
+              }
             }
-          }
-        ]
-      );
+          ]
+        );
+      } else {
+        throw new Error('Unexpected status code: ' + apiResponse.status);
+      }
     } catch (error) {
       console.error('API Error:', error);
       Alert.alert(
@@ -230,112 +241,129 @@ const CreateServiceScreen = () => {
         }}
       />
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}  // 'height' for Android
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardAvoidingView}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}  // Adjust vertical offset as needed
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
       >
-        <ScrollView
-          style={styles.content}
+        <ScrollView 
           contentContainerStyle={styles.scrollViewContent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
+          nestedScrollEnabled={true}
+          scrollEnabled={scrollEnabled}
         >
-          <TouchableOpacity
-            style={[styles.imageContainer, errors.image && styles.errorBorder]}
-            onPress={pickImage}
-            activeOpacity={0.7}
-          >
-            {serviceImage ? (
-              <Image
-                source={{ uri: serviceImage }}
-                style={styles.serviceImage}
-                resizeMode="cover"
+          <View style={styles.content}>
+            <TouchableOpacity
+              style={[styles.imageContainer, errors.image && styles.errorBorder]}
+              onPress={pickImage}
+              activeOpacity={0.7}
+            >
+              {serviceImage ? (
+                <Image
+                  source={{ uri: serviceImage }}
+                  style={styles.serviceImage}
+                  resizeMode="cover"
+                />
+              ) : (
+                <View style={styles.imagePlaceholder}>
+                  <Ionicons name="image-outline" size={40} color={COLORS.gray} />
+                  <Text style={styles.imagePlaceholderText}>Add Service Image</Text>
+                  {errors.image && (
+                    <Text style={styles.errorText}>{errors.image}</Text>
+                  )}
+                </View>
+              )}
+            </TouchableOpacity>
+
+            <View style={styles.formField}>
+              <Text style={styles.fieldLabel}>Service Title</Text>
+              <TextInput
+                style={[styles.input, errors.title && styles.errorBorder]}
+                placeholder="Enter service title"
+                placeholderTextColor="#B0B0B0"
+                value={serviceTitle}
+                onChangeText={(text) => {
+                  setServiceTitle(text);
+                  setErrors(prev => ({ ...prev, title: '' }));
+                }}
               />
-            ) : (
-              <View style={styles.imagePlaceholder}>
-                <Ionicons name="image-outline" size={40} color={COLORS.gray} />
-                <Text style={styles.imagePlaceholderText}>Add Service Image</Text>
-                {errors.image && (
-                  <Text style={styles.errorText}>{errors.image}</Text>
-                )}
-              </View>
-            )}
-          </TouchableOpacity>
+              {errors.title && <Text style={styles.errorText}>{errors.title}</Text>}
+            </View>
 
-          <View style={styles.formField}>
-            <Text style={styles.fieldLabel}>Service Title</Text>
-            <TextInput
-              style={[styles.input, errors.title && styles.errorBorder]}
-              placeholder="Enter service title"
-              placeholderTextColor="#B0B0B0"
-              value={serviceTitle}
-              onChangeText={(text) => {
-                setServiceTitle(text);
-                setErrors(prev => ({ ...prev, title: '' }));
-              }}
-            />
-            {errors.title && <Text style={styles.errorText}>{errors.title}</Text>}
+            <View style={styles.formField}>
+              <Text style={styles.fieldLabel}>Service Description</Text>
+              <TextInput
+                style={[styles.input, styles.textArea, errors.description && styles.errorBorder]}
+                placeholder="Enter service description"
+                placeholderTextColor="#B0B0B0"
+                multiline
+                value={serviceDescription}
+                onChangeText={(text) => {
+                  setServiceDescription(text);
+                  setErrors(prev => ({ ...prev, description: '' }));
+                }}
+              />
+              {errors.description && <Text style={styles.errorText}>{errors.description}</Text>}
+            </View>
+
+            <View style={styles.formField}>
+              <Text style={styles.fieldLabel}>Service Price (in SAR)</Text>
+              <TextInput
+                style={[styles.input, errors.price && styles.errorBorder]}
+                placeholder="Enter service price"
+                placeholderTextColor="#B0B0B0"
+                keyboardType="numeric"
+                value={servicePrice}
+                onChangeText={(text) => {
+                  setServicePrice(text);
+                  setErrors(prev => ({ ...prev, price: '' }));
+                }}
+              />
+              {errors.price && <Text style={styles.errorText}>{errors.price}</Text>}
+            </View>
+
+            <View style={[styles.formField, styles.dropdownWrapper]}>
+              <Text style={styles.fieldLabel}>Service Category</Text>
+              <DropDownPicker
+                open={openCategory}
+                value={selectedCategory}
+                items={mappedCategories}
+                setOpen={onDropdownOpen}
+                onClose={onDropdownClose}
+                setValue={setSelectedCategory}
+                placeholder="Select a category"
+                style={styles.dropdownStyle}
+                dropDownContainerStyle={styles.dropdownContainer}
+                listMode="SCROLLVIEW"
+                scrollViewProps={{
+                  nestedScrollEnabled: true,
+                }}
+                maxHeight={300}
+                zIndex={9000}
+                zIndexInverse={9000}
+                modalProps={{
+                  animationType: "fade"
+                }}
+                modalContentContainerStyle={{
+                  backgroundColor: "white"
+                }}
+              />
+              {errors.category && <Text style={styles.errorText}>{errors.category}</Text>}
+            </View>
+
+            <TouchableOpacity
+              style={[styles.createButton, isLoading && styles.disabledButton]}
+              onPress={handleCreateService}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator size="small" color={COLORS.white} />
+              ) : (
+                <Text style={styles.createButtonText}>Create Service</Text>
+              )}
+            </TouchableOpacity>
           </View>
-
-          <View style={styles.formField}>
-            <Text style={styles.fieldLabel}>Service Description</Text>
-            <TextInput
-              style={[styles.input, styles.textArea, errors.description && styles.errorBorder]}
-              placeholder="Enter service description"
-              placeholderTextColor="#B0B0B0"
-              multiline
-              value={serviceDescription}
-              onChangeText={(text) => {
-                setServiceDescription(text);
-                setErrors(prev => ({ ...prev, description: '' }));
-              }}
-            />
-            {errors.description && <Text style={styles.errorText}>{errors.description}</Text>}
-          </View>
-
-          <View style={styles.formField}>
-            <Text style={styles.fieldLabel}>Service Price (in SAR)</Text>
-            <TextInput
-              style={[styles.input, errors.price && styles.errorBorder]}
-              placeholder="Enter service price"
-              placeholderTextColor="#B0B0B0"
-              keyboardType="numeric"
-              value={servicePrice}
-              onChangeText={(text) => {
-                setServicePrice(text);
-                setErrors(prev => ({ ...prev, price: '' }));
-              }}
-            />
-            {errors.price && <Text style={styles.errorText}>{errors.price}</Text>}
-          </View>
-
-          <View style={styles.formField}>
-            <Text style={styles.fieldLabel}>Service Category</Text>
-            <DropDownPicker
-              open={openCategory}
-              value={selectedCategory}
-              items={categories}
-              setOpen={setOpenCategory}
-              setValue={setSelectedCategory}
-              placeholder="Select a category"
-              containerStyle={styles.dropdown}
-              zIndex={5000}
-            />
-            {errors.category && <Text style={styles.errorText}>{errors.category}</Text>}
-          </View>
-
-          <TouchableOpacity
-            style={[styles.createButton, isLoading && styles.disabledButton]}
-            onPress={handleCreateService}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <ActivityIndicator size="small" color={COLORS.white} />
-            ) : (
-              <Text style={styles.createButtonText}>Create Service</Text>
-            )}
-          </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -360,9 +388,10 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: SIZES.medium,
+    paddingBottom: SIZES.xxLarge,
   },
   scrollViewContent: {
-    paddingBottom: SIZES.xxLarge,
+    minHeight: SCREEN_HEIGHT - 100,
   },
   imageContainer: {
     width: '100%',
@@ -374,6 +403,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: SIZES.large,
     backgroundColor: COLORS.lightGray,
+    marginTop: 50
   },
   imagePlaceholder: {
     justifyContent: 'center',
@@ -392,6 +422,10 @@ const styles = StyleSheet.create({
   formField: {
     marginBottom: SIZES.medium,
   },
+  dropdownWrapper: {
+    zIndex: 9000,
+    elevation: Platform.OS === 'android' ? 9000 : 0,
+  },
   fieldLabel: {
     fontFamily: FONT.medium,
     fontSize: SIZES.medium,
@@ -405,14 +439,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.medium,
     fontFamily: FONT.regular,
     fontSize: SIZES.medium,
+    backgroundColor: COLORS.white,
   },
   textArea: {
     height: 120,
     textAlignVertical: 'top',
+    paddingTop: SIZES.small,
   },
-  dropdown: {
-    zIndex: 5000,
+  dropdownStyle: {
+    borderColor: COLORS.gray,
     height: 48,
+    backgroundColor: COLORS.white,
+  },
+  dropdownContainer: {
+    borderColor: COLORS.gray,
+    backgroundColor: COLORS.white,
+    position: 'absolute',
+    width: '100%',
+    elevation: Platform.OS === 'android' ? 9000 : 0,
   },
   createButton: {
     backgroundColor: COLORS.primary,
