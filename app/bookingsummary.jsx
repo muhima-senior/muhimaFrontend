@@ -133,10 +133,7 @@ const BookingSummaryScreen = () => {
             </View>
           </View>
 
-          <TouchableOpacity style={styles.couponButton}>
-            <ArrowLeft color={COLORS.primary} size={24} />
-            <Text style={styles.couponButtonText}>{COUPON_BUTTON_TEXT}</Text>
-          </TouchableOpacity>
+          
 
           <View style={styles.summaryContainer}>
             <View style={styles.summaryRow}>
@@ -166,9 +163,7 @@ const BookingSummaryScreen = () => {
           <View style={styles.bottomTabContent}>
             <View style={styles.priceContainer}>
               <Text style={styles.bottomPrice}>SAR {grandTotal.toFixed(2)}</Text>
-              <TouchableOpacity>
-                <Text style={styles.viewDetails}>View Details</Text>
-              </TouchableOpacity>
+            
             </View>
             <TouchableOpacity 
               style={styles.selectSlotButton} 

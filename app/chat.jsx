@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   userBubble: {
-    backgroundColor: '#0084ff',
+    backgroundColor: '#312651',
     alignSelf: 'flex-end',
   },
   otherBubble: {
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
     minHeight: 40,
   },
   sendButton: {
-    backgroundColor: '#0084ff',
+    backgroundColor: '#312651',
     borderRadius: 20,
     paddingHorizontal: 20,
     paddingVertical: 8,
