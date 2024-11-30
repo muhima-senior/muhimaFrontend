@@ -47,7 +47,7 @@ const BestServicesSection = () => {
 
       
       {loading ? ( // Show loading indicator while fetching services
-        <ActivityIndicator size="large" color="#4A90E2" />
+        <ActivityIndicator size="large" color="#312651" />
       ) : services.length > 0 ? ( // Render FlatList only if services are populated
         <FlatList
           data={services}

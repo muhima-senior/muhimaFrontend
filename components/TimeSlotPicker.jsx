@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { useRouter } from "expo-router";
 
-const TimeSlotPicker = ({ availableSlots, quantity, total, serviceId }) => {
+const TimeSlotPicker = ({ availableSlots, quantity, total, serviceId, serviceName }) => {
 
   const [selectedDay, setSelectedDay] = useState('monday');
   const [selectedSlots, setSelectedSlots] = useState([]);
@@ -59,6 +59,7 @@ const proceedToCheckout = () => {
     total,
     selectedSlots: JSON.stringify(selectedSlots), // Serialize complex data
     quantity,
+    serviceName,
   };
   router.push({
     pathname: '/checkout',
@@ -238,7 +239,7 @@ const styles = StyleSheet.create({
   checkoutButton: {
     paddingVertical: 15,
     borderRadius: 8,
-    backgroundColor: '#007aff',
+    backgroundColor: '#312651',
     alignItems: 'center',
   },
   disabledButton: {

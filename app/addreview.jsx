@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { REACT_APP_API_URL_NEW } from '@env';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
+import { COLORS, FONT, SIZES, SHADOWS } from '../constants/theme';
 
 const ReviewScreen = () => {
   const [rating, setRating] = useState(0);
@@ -40,7 +41,7 @@ const ReviewScreen = () => {
         <Ionicons
           name={i + 1 <= rating ? 'star' : 'star-outline'}
           size={32}
-          color="#007AFF"
+          color={COLORS.primary}
         />
       </TouchableOpacity>
     ));
@@ -139,7 +140,7 @@ const ReviewScreen = () => {
           >
             <View style={styles.checkbox}>
               {recommended && (
-                <Ionicons name="checkmark" size={16} color="#007AFF" />
+                <Ionicons name="checkmark" size={16} color={COLORS.primary} />
               )}
             </View>
             <Text style={styles.recommendText}>
@@ -228,7 +229,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderWidth: 1,
-    borderColor: '#007AFF',
+    borderColor: COLORS.primary,
     borderRadius: 2,
     marginRight: 10,
     justifyContent: 'center',
@@ -239,7 +240,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   submitButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: COLORS.primary,
     paddingVertical: 12,
     borderRadius: 8,
     marginBottom: 30,

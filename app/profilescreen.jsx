@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, ScrollView, ActivityIndicator } from 'react-native';
-import { Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import axios from 'axios';
 import BottomNavBar from '../components/Home/BottomNavbar';
 import Base64Image from '@/components/Base64Image';
 import { useGlobalStore } from './store/GlobalStore';
+import { MaterialIcons, FontAwesome,Ionicons } from '@expo/vector-icons';
+
 
 const ProfileScreen = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -40,7 +41,7 @@ const ProfileScreen = () => {
     const routes = {
       EditProfile: '/ProfilePages/editprofile',
       ChangePassword: '/ProfilePages/changepass',
-      MyBookings: { pathname: 'mybooking', params: { type: 'homeowner' } },
+      MyBookings: { pathname: 'Homeowner/mybooking', params: { type: 'homeowner' } },
       PrivacyPolicy: '/ProfilePages/privacy',
       TermsConditions: '/ProfilePages/terms',
       Logout: '/signinscreen',
@@ -55,7 +56,7 @@ const ProfileScreen = () => {
   if (isLoading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#007bff" />
+        <ActivityIndicator size="large" color="#312651" />
       </View>
     );
   }
@@ -78,9 +79,9 @@ const ProfileScreen = () => {
           {[
             { screen: 'EditProfile', icon: 'create-outline', text: 'Edit Profile' },
             { screen: 'ChangePassword', icon: 'lock-closed-outline', text: 'Change Password' },
-            { screen: 'MyBookings', icon: 'event-note', text: 'My Bookings' },
+            { screen: 'MyBookings', icon: 'calendar-outline', text: 'My Bookings' },
             { screen: 'PrivacyPolicy', icon: 'shield', text: 'Privacy Policy' },
-            { screen: 'TermsConditions', icon: 'gavel', text: 'Terms & Conditions' },
+            { screen: 'TermsConditions', icon: 'book-outline', text: 'Terms & Conditions' },
             { screen: 'Logout', icon: 'log-out-outline', text: 'Logout', color: '#ff4d4d' },
           ].map(({ screen, icon, text, color }, idx) => (
             <TouchableOpacity

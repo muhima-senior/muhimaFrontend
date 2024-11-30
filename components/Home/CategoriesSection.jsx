@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   seeAll: {
-    color: '#4A90E2',
+    color: '#312651',
   },
   categoryItem: {
     flex: 1,
