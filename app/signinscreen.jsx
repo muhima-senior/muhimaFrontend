@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, StatusBar, Alert, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, StatusBar, Alert, KeyboardAvoidingView, ScrollView, Platform, ActivityIndicator } from 'react-native';
 import { Stack, useRouter } from "expo-router";
 import axios from 'axios';
 import * as yup from 'yup';
@@ -7,7 +7,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { REACT_APP_API_URL_NEW } from '@env';
 import { COLORS, FONT, SIZES, SHADOWS } from '../constants/theme';
 import { useGlobalStore } from './store/GlobalStore';
-
 
 const validationSchema = yup.object().shape({
   email: yup.string().email('Invalid email').required('Email is required'),
@@ -19,12 +18,13 @@ const SignInScreen = () => {
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { user, setUser, userType, setUserId, userId } = useGlobalStore();
 
-
   const handleSignIn = async () => {
     try {
+      setIsLoading(true);
       // Validate inputs
       await validationSchema.validate({ email, password }, { abortEarly: false });
       setErrors({});
@@ -55,7 +55,7 @@ const SignInScreen = () => {
             if (freelancerError.response?.status === 404) {
               router.push('Freelancer/createprofile');
             } else {
-              throw freelancerError; // Handle other errors
+              throw freelancerError;
             }
           }
         } else if (userType === 'Homeowner') {
@@ -69,23 +69,19 @@ const SignInScreen = () => {
             if (homeownerError.response?.status === 404) {
               router.push('Homeowner/createProfile');
             } else {
-              throw homeownerError; // Handle other errors
+              throw homeownerError;
             }
           }
         }
-        
       }
     } catch (error) {
-      // Validation errors
       if (error instanceof yup.ValidationError) {
         const newErrors = {};
         error.inner.forEach(err => {
           newErrors[err.path] = err.message;
         });
         setErrors(newErrors);
-      } 
-      // Axios errors
-      else if (axios.isAxiosError(error)) {
+      } else if (axios.isAxiosError(error)) {
         console.error('Axios Error:', error.response?.data);
         if (error.response) {
           switch (error.response.status) {
@@ -101,12 +97,12 @@ const SignInScreen = () => {
         } else {
           Alert.alert('Error', 'Network error. Please try again.');
         }
-      } 
-      // Generic errors
-      else {
+      } else {
         console.error('Unexpected Error:', error);
         Alert.alert('Error', 'An unexpected error occurred');
       }
+    } finally {
+      setIsLoading(false);
     }
   };
   
@@ -183,8 +179,17 @@ const SignInScreen = () => {
               <Text style={styles.forgotPassword}>FORGOT PASSWORD</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
-              <Text style={styles.signInButtonText}>Sign In</Text>
+
+            <TouchableOpacity 
+              style={[styles.signInButton, isLoading && styles.signInButtonDisabled]} 
+              onPress={handleSignIn}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator color={COLORS.white} />
+              ) : (
+                <Text style={styles.signInButtonText}>Sign In</Text>
+              )}
             </TouchableOpacity>
 
             <TouchableOpacity onPress={handleSignUp}>
@@ -289,11 +294,15 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.large,
     ...SHADOWS.medium,
   },
+  signInButtonDisabled: {
+    backgroundColor: COLORS.gray2,
+    opacity: 0.7,
+  },
   signInButtonText: {
     color: COLORS.white,
     fontSize: SIZES.large,
     fontFamily: FONT.bold,
-  },
+  },  
   signUpText: {
     fontSize: SIZES.medium,
     fontFamily: FONT.regular,
@@ -310,6 +319,7 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.small,
     alignSelf: 'flex-start',
   },
+
 });
 
 export default SignInScreen;
