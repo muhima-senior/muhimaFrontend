@@ -212,29 +212,7 @@ const handleBookAgain = () => {
           </View>
         </View>
 
-        {/* Enhanced Payment Summary Card */}
-        <View style={[styles.card, styles.paymentCard]}>
-          <Text style={styles.sectionTitle}>Payment Summary</Text>
-          <View style={styles.paymentDetails}>
-            <View style={styles.paymentRow}>
-              <Text style={styles.paymentLabel}>Item Total</Text>
-              <Text style={styles.paymentValue}>{bookingData.paymentSummary?.itemTotal}</Text>
-            </View>
-            <View style={styles.paymentRow}>
-              <Text style={styles.paymentLabel}>Discount</Text>
-              <Text style={[styles.paymentValue, styles.discountText]}>{bookingData.paymentSummary?.discount}</Text>
-            </View>
-            <View style={styles.paymentRow}>
-              <Text style={styles.paymentLabel}>Delivery Fee</Text>
-              <Text style={styles.paymentValue}>{bookingData.paymentSummary?.deliveryFee}</Text>
-            </View>
-            <View style={styles.divider} />
-            <View style={styles.grandTotalRow}>
-              <Text style={styles.grandTotalLabel}>Grand Total</Text>
-              <Text style={styles.grandTotalValue}>{`SAR ${bookingData.total || bookingData.paymentSummary?.grandTotal}`}</Text>
-            </View>
-          </View>
-        </View>
+
       </ScrollView>
     </SafeAreaView>
   );
