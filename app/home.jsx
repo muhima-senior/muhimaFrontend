@@ -28,11 +28,11 @@ const Home = () => {
         options={{
           headerStyle: { backgroundColor: COLORS.lightWhite },
           headerShadowVisible: false,
-          header: () => <Header username={user} />,
+         // header: () => <Header username={user} />,
           headerTitle: "",
         }}
       />
-
+        <Header username={user} userId={userId}/>
       <FlatList
         data={[/* dummy data, if needed */]}
         renderItem={null} // Since we handle custom components, set this to null
