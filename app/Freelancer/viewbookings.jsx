@@ -62,40 +62,74 @@ const BookingsScreen = () => {
     setStatusModalVisible(true);
   };
 
-  const StatusUpdateModal = () => (
-    <Modal
-      transparent={true}
-      visible={isStatusModalVisible}
-      animationType="slide"
-      onRequestClose={() => setStatusModalVisible(false)}
-    >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>Update Booking Status</Text>
-          <Text style={styles.modalSubtitle}>{selectedBooking?.gigTitle}</Text>
-          {isUpdating ? (
-            <ActivityIndicator size="large" color={COLORS.primary} />
-          ) : (
+  const StatusUpdateModal = () => {
+    const renderStatusButtons = () => {
+      if (!selectedBooking) return null;
+  
+      switch (selectedBooking.status.toLowerCase()) {
+        case 'pending':
+          return (
             <View style={styles.statusButtonsWrapper}>
-              <TouchableOpacity style={[styles.statusButton, styles.confirmedButton]} onPress={() => handleUpdateStatus('Confirmed')}>
+              <TouchableOpacity 
+                style={[styles.statusButton, styles.confirmedButton]} 
+                onPress={() => handleUpdateStatus('Confirmed')}
+              >
                 <Text style={styles.statusButtonText}>Confirm</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.statusButton, styles.completedButton]} onPress={() => handleUpdateStatus('Completed')}>
-                <Text style={styles.statusButtonText}>Complete</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.statusButton, styles.cancelButton]} onPress={() => handleUpdateStatus('Cancelled')}>
+              <TouchableOpacity 
+                style={[styles.statusButton, styles.cancelButton]} 
+                onPress={() => handleUpdateStatus('Cancelled')}
+              >
                 <Text style={styles.statusButtonText}>Cancel</Text>
               </TouchableOpacity>
             </View>
-          )}
-          <TouchableOpacity style={styles.closeModalButton} onPress={() => setStatusModalVisible(false)}>
-            <Text style={styles.closeModalButtonText}>Close</Text>
-          </TouchableOpacity>
+          );
+        case 'confirmed':
+          return (
+            <View style={styles.statusButtonsWrapper}>
+              <TouchableOpacity 
+                style={[styles.statusButton, styles.completedButton]} 
+                onPress={() => handleUpdateStatus('Completed')}
+              >
+                <Text style={styles.statusButtonText}>Complete</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.statusButton, styles.cancelButton]} 
+                onPress={() => handleUpdateStatus('Cancelled')}
+              >
+                <Text style={styles.statusButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          );
+        default:
+          return null;
+      }
+    };
+  
+    return (
+      <Modal
+        transparent={true}
+        visible={isStatusModalVisible}
+        animationType="slide"
+        onRequestClose={() => setStatusModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Update Booking Status</Text>
+            <Text style={styles.modalSubtitle}>{selectedBooking?.gigTitle}</Text>
+            {isUpdating ? (
+              <ActivityIndicator size="large" color={COLORS.primary} />
+            ) : (
+              renderStatusButtons()
+            )}
+            <TouchableOpacity style={styles.closeModalButton} onPress={() => setStatusModalVisible(false)}>
+              <Text style={styles.closeModalButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </Modal>
-  );
-
+      </Modal>
+    );
+  };
   const renderBookingItem = ({ item }) => (
     <View style={styles.bookingCard}>
       <View style={styles.bookingHeader}>
@@ -227,6 +261,7 @@ const styles = StyleSheet.create({
     color: COLORS.gray,
   },
   bookingCard: {
+    marginTop: 10,
     backgroundColor: COLORS.white,
     borderRadius: SIZES.small,
     padding: 16,
