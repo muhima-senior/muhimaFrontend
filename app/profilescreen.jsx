@@ -44,7 +44,7 @@ const ProfileScreen = () => {
       MyBookings: { pathname: 'Homeowner/mybooking', params: { type: 'homeowner' } },
       PrivacyPolicy: '/ProfilePages/privacy',
       TermsConditions: '/ProfilePages/terms',
-      Logout: '/signinscreen',
+      Logout: '/landingpage',
     };
 
     const route = routes[screen];

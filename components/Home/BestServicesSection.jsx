@@ -36,7 +36,7 @@ const BestServicesSection = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Best Services</Text>
+        <Text style={styles.title}>Services</Text>
         <TouchableOpacity onPress={handleSeeAll}>
           <Text style={styles.seeAll}>See All</Text>
         </TouchableOpacity>
