@@ -7,7 +7,9 @@ import {
   ScrollView,
   TouchableOpacity,
   SafeAreaView,
-  ActivityIndicator
+  ActivityIndicator,
+  Alert,
+  Linking
 } from 'react-native';
 import {
   ArrowLeft,
@@ -19,24 +21,13 @@ import {
 } from 'lucide-react-native';
 import { useRouter, Stack, useLocalSearchParams } from "expo-router";
 import axios from 'axios';
-// import { useRoute } from '@react-navigation/native';
 import { REACT_APP_API_URL_NEW } from '@env';
 import { COLORS } from '../constants/theme';
 import Base64Image from '@/components/Base64Image';
 import { useGlobalStore } from './store/GlobalStore';
 
-const ActionButton = ({ icon, label }) => (
-  <TouchableOpacity style={styles.actionButton}>
-    <View style={styles.actionIconContainer}>
-      {icon}
-    </View>
-    <Text style={styles.actionLabel}>{label}</Text>
-  </TouchableOpacity>
-);
-
 const ServiceDetailScreen = () => {
   const router = useRouter();
-  // const route = useRoute();
   const { userId, userType } = useGlobalStore();
 
   // States
@@ -46,13 +37,11 @@ const ServiceDetailScreen = () => {
   
   const { service_id } = useLocalSearchParams();
   
-  // Fetch the service_id from route params when the component mounts
   useEffect(() => {
     setServiceId(service_id)
     console.log(service_id)
   }, []);
 
-  // Fetch service details using the serviceId
   const getServiceDetails = async () => {
     if (serviceId) {
       try {
@@ -61,33 +50,46 @@ const ServiceDetailScreen = () => {
       } catch (error) {
         console.error('Error fetching service details:', error);
       } finally {
-        setLoading(false);  // Stop loading in both success and error cases
+        setLoading(false);
       }
     }
   };
 
-  // Fetch the service details once the serviceId is set
   useEffect(() => {
     getServiceDetails();
-  }, [serviceId]);  // Re-run only when serviceId changes
+  }, [serviceId]);
 
   const handleBookService = () => {
     router.push({
       pathname: 'bookingsummary',
       params: {
         serviceId: service._id,
-        // service: JSON.stringify(service),
       },
     });
   };
 
-  if (loading) {
-    return (
-      <View style={styles.loader}>
-      <ActivityIndicator size="large" color={COLORS.primary} />
-    </View>
-    );
-  }
+  const handleCall = () => {
+    if (service?.freelancer?.mobileNumber) {
+      Alert.alert(
+        "Contact Provider",
+        `Call ${service.freelancer.mobileNumber}?`,
+        [
+          {
+            text: "Cancel",
+            style: "cancel"
+          },
+          {
+            text: "Call",
+            onPress: () => {
+              Linking.openURL(`tel:${service.freelancer.mobileNumber}`);
+            }
+          }
+        ]
+      );
+    } else {
+      Alert.alert("Error", "Mobile number not available");
+    }
+  };
 
   const handleChatNavigation = () => {
     if (service && service.freelancer && service.user) {
@@ -105,6 +107,14 @@ const ServiceDetailScreen = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
+
   const ActionButton = ({ icon, label, onPress }) => (
     <TouchableOpacity style={styles.actionButton} onPress={onPress}>
       <View style={styles.actionIconContainer}>
@@ -114,10 +124,8 @@ const ServiceDetailScreen = () => {
     </TouchableOpacity>
   );
 
-
   return (
     <SafeAreaView style={styles.container}>
-      {/* Removed <Stack.Screen> */}
       <Stack.Screen
         options={{
           headerShadowVisible: false,
@@ -152,17 +160,22 @@ const ServiceDetailScreen = () => {
           <Text style={styles.serviceTitle}>{service.title}</Text>
           <View style={styles.priceContainer}>
             <Text style={styles.currentPrice}>SAR {service.price}</Text>
-            {/* <Text style={styles.originalPrice}>SAR {service.originalPrice}</Text> */}
           </View>
 
           <Text style={styles.sectionTitle}>Descriptions</Text>
           <Text style={styles.description}>{service.description}</Text>
 
           <View style={styles.actionContainer}>
-            <ActionButton icon={<Phone color={COLORS.primary} size={24} />} label="Call" />
-            <ActionButton icon={<MessageSquare color={COLORS.primary} size={24} />} label="Chat" onPress={handleChatNavigation}/>
-            <ActionButton icon={<MapPin color={COLORS.primary} size={24} />} label="Map" />
-            <ActionButton icon={<Share2 color={COLORS.primary} size={24} />} label="Share" />
+            <ActionButton 
+              icon={<Phone color={COLORS.primary} size={24} />} 
+              label="Call" 
+              onPress={handleCall}
+            />
+            <ActionButton 
+              icon={<MessageSquare color={COLORS.primary} size={24} />} 
+              label="Chat" 
+              onPress={handleChatNavigation}
+            />
           </View>
 
           <Text style={styles.sectionTitle}>About Service Provider</Text>
@@ -180,13 +193,6 @@ const ServiceDetailScreen = () => {
               <Text style={styles.providerTitle}>Service Provider</Text>
             </View>
           </View>
-
-          {/* 
-          <Text style={styles.sectionTitle}>Reviews</Text>
-          {service.reviews.map((review, index) => (
-            <ReviewItem key={index} review={review} />
-          ))} 
-          */}
         </View>
       </ScrollView>
 
@@ -238,7 +244,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  ratingCount: { // Fixed: Changed from 'reviewCount' to 'ratingCount'
+  ratingCount: {
     marginLeft: 8,
     color: '#555',
   },
@@ -285,8 +291,7 @@ const styles = StyleSheet.create({
     width: '23%',
     justifyContent: 'center',
   },
-  actionIconContainer: { // Added to properly style the icon container
-    // Add any styles you need for the icon container
+  actionIconContainer: {
   },
   actionLabel: {
     marginLeft: 8,
@@ -311,35 +316,6 @@ const styles = StyleSheet.create({
   providerTitle: {
     fontSize: 14,
     color: '#555',
-  },
-  reviewItem: {
-    marginBottom: 16,
-  },
-  reviewerImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 12,
-  },
-  reviewContent: {
-    flex: 1,
-  },
-  reviewerName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  starContainer: {
-    flexDirection: 'row',
-    marginVertical: 4,
-  },
-  reviewDate: {
-    fontSize: 14,
-    color: '#555',
-  },
-  reviewText: {
-    fontSize: 14,
-    color: '#333',
-    marginTop: 4,
   },
   footer: {
     flexDirection: 'row',
