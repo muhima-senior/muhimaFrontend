@@ -166,12 +166,12 @@ const Checkout = () => {
             icon="payments"
             onSelect={() => setPaymentMethod('COD')}
           />
-          <PaymentMethodCard
+          {/* <PaymentMethodCard
             selected={paymentMethod === 'TRANSFER'}
             title="Online Transfer"
             icon="account-balance"
             onSelect={() => setPaymentMethod('TRANSFER')}
-          />
+          /> */}
 
           {paymentMethod === 'CARD' && (
             <CardInput onSaveCard={handleSaveCard} />
