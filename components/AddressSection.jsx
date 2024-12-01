@@ -36,7 +36,7 @@ const AddressSection = ({ onSaveAddress }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Address</Text>
-        <TouchableOpacity 
+        {/* <TouchableOpacity 
           style={styles.iconButton} 
           onPress={handleUseCurrentLocation}
           disabled={isLoadingLocation}
@@ -46,7 +46,7 @@ const AddressSection = ({ onSaveAddress }) => {
           ) : (
             <Ionicons name="location-outline" size={20} color="#fff" />
           )}
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       <TextInput
