@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import { ArrowLeft, Search } from 'lucide-react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { ArrowLeft } from 'lucide-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import ServiceCard from '../components/Home/ServiceCard';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -17,27 +17,27 @@ const BestServicesScreen = () => {
     try {
       let url = `${REACT_APP_API_URL_NEW}/api/service`;
 
-      if (type === "best") {
+      if (type === 'best') {
         url = `${REACT_APP_API_URL_NEW}/api/service`; // Assuming this fetches all services
-      } else if (type === "category" && category) {
+      } else if (type === 'category' && category) {
         url = `${REACT_APP_API_URL_NEW}/api/service/category/${category}`; // Use the category ID directly
-      } else if (type === "freelancer" && freelanceId) {
+      } else if (type === 'freelancer' && freelanceId) {
         url = `${REACT_APP_API_URL_NEW}/api/service/freelancer/${freelanceId}`;
       }
-      
+
       const response = await axios.get(url);
       console.log(url); // Log the URL for debugging
       setServices(response.data);
-      setLoading(false); // Stop loading after data is fetched
     } catch (error) {
       console.error('Error fetching services:', error);
-      setLoading(false); // Stop loading in case of error
+    } finally {
+      setLoading(false); // Stop loading regardless of success or failure
     }
   };
 
   useEffect(() => {
     getServices();
-  }, [type, category, freelanceId]); // Ensure the effect runs when type, category, or freelanceId changes
+  }, [type, category, freelanceId]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -45,18 +45,25 @@ const BestServicesScreen = () => {
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()}>
             <ArrowLeft color="#000" size={24} />
-          </TouchableOpacity> 
+          </TouchableOpacity>
           <Text style={styles.headerTitle}>{title}</Text>
           <View style={{ width: 24 }} />
         </View>
 
-        <FlatList
-          data={services}
-          renderItem={({ item }) => <ServiceCard service={item} cardWidth={0.9} />}
-          keyExtractor={(item) => item._id}
-          contentContainerStyle={styles.list}
-          nestedScrollEnabled={true}
-        />
+        {loading ? (
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="large" color="#312651" />
+            <Text style={styles.loaderText}>Loading services...</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={services}
+            renderItem={({ item }) => <ServiceCard service={item} cardWidth={0.9} />}
+            keyExtractor={(item) => item._id}
+            contentContainerStyle={styles.list}
+            nestedScrollEnabled={true}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
@@ -82,6 +89,18 @@ const styles = StyleSheet.create({
   },
   list: {
     padding: 16,
+  },
+  loaderContainer: {
+    flex: 5, // Take up full screen
+    justifyContent: 'center', // Center vertically
+    alignItems: 'center', // Center horizontally
+    backgroundColor: '#fff',
+    paddingTop: '10%',
+  },
+  loaderText: {
+    marginTop: 8,
+    fontSize: 16,
+    color: '#555',
   },
 });
 
