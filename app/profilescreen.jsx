@@ -78,7 +78,7 @@ const ProfileScreen = () => {
         <View style={styles.optionsContainer}>
           {[
             { screen: 'EditProfile', icon: 'create-outline', text: 'Edit Profile' },
-            { screen: 'ChangePassword', icon: 'lock-closed-outline', text: 'Change Password' },
+            // { screen: 'ChangePassword', icon: 'lock-closed-outline', text: 'Change Password' },
             { screen: 'MyBookings', icon: 'calendar-outline', text: 'My Bookings' },
             { screen: 'PrivacyPolicy', icon: 'shield', text: 'Privacy Policy' },
             { screen: 'TermsConditions', icon: 'book-outline', text: 'Terms & Conditions' },
