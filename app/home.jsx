@@ -32,7 +32,7 @@ const Home = () => {
           headerTitle: "",
         }}
       />
-        <Header username={user} userId={userId}/>
+
       <FlatList
         data={[/* dummy data, if needed */]}
         renderItem={null} // Since we handle custom components, set this to null
