@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 16,
     fontWeight: 'bold',
+    marginLeft: 12, // Added space between the image and name
   },
   profilePic: {
     width: 50,
