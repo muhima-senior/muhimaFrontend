@@ -98,7 +98,7 @@ const Checkout = () => {
 
   const handleSaveCard = (details) => {
     setCardDetails(details);
-    setPaymentMethod('CARD');
+    setPaymentMethod('CreditCard');
   };
   const handleDone = () => {
     setShowBookingConfirmation(false);
@@ -155,10 +155,10 @@ const Checkout = () => {
         <View style={styles.paymentSection}>
           <Text style={styles.sectionTitle}>Payment Method</Text>
           <PaymentMethodCard
-            selected={paymentMethod === 'CARD'}
+            selected={paymentMethod === 'CreditCard'}
             title="Credit/Debit Card"
             icon="credit-card"
-            onSelect={() => setPaymentMethod('CARD')}
+            onSelect={() => setPaymentMethod('CreditCard')}
           />
           <PaymentMethodCard
             selected={paymentMethod === 'COD'}
@@ -173,7 +173,7 @@ const Checkout = () => {
             onSelect={() => setPaymentMethod('TRANSFER')}
           /> */}
 
-          {paymentMethod === 'CARD' && (
+          {paymentMethod === 'CreditCard' && (
             <CardInput onSaveCard={handleSaveCard} />
           )}
         </View>
