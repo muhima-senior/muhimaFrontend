@@ -175,6 +175,7 @@ const CreateProfileScreen = () => {
             <LinearGradient
               colors={[COLORS.primary, COLORS.gray]}
               style={styles.profilePicturePlaceholder}
+            >
               <Ionicons name="camera" size={40} color={COLORS.white} />
               <Text style={styles.profilePictureText}>Add Photo</Text>
             </LinearGradient>
