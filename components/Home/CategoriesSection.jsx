@@ -1,40 +1,36 @@
-import React from 'react';
+import React from 'react'; 
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useGlobalStore } from '../../app/store/GlobalStore';
 
-
 const CategoryItem = ({ item, handleCategorySelection }) => (
   <TouchableOpacity
     style={styles.categoryItem}
-    onPress={() => handleCategorySelection(item.name)}
+    onPress={() => handleCategorySelection(item)} // Pass the entire category item
   >
     <View style={styles.iconContainer}>
       <Text style={styles.iconText}>{item.icon}</Text>
     </View>
     <Text style={styles.categoryName}>{item.name}</Text>
-
   </TouchableOpacity>
 );
-
-const handleSeeAll = () => {
-  router.push({
-    pathname: 'categories',
-    params: { type: "category", title: "All Categories", category: "None" },
-  });
-};
 
 const CategoriesSection = () => {
   const router = useRouter();
   const { categories } = useGlobalStore();
 
-  const handleCategorySelection = (categoryName) => {
-    console.log("Category: ", categoryName)
+  const handleCategorySelection = (category) => { // Expect full category object
+    console.log("Category selected: ", category);
     router.push({
       pathname: 'bestservicescreen',
-      params: { type: "category", title: `${categoryName} Services`, category: categoryName },
+      params: { 
+        type: "category", 
+        title: `${category.name} Services`, // Use category.name
+        category: category.id // Pass category ID
+      },
     });
-  }
+  };
+
   const handleSeeAll = () => {
     router.push('categories'); // Navigate to the categories page
   };

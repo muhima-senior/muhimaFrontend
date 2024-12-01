@@ -18,37 +18,36 @@ const BestServicesScreen = () => {
       let url = `${REACT_APP_API_URL_NEW}/api/service`;
 
       if (type === "best") {
-        url = `${REACT_APP_API_URL_NEW}/api/service`;
-      } else if (type === "category") {
-        url = `${REACT_APP_API_URL_NEW}/api/service/category/${category?.toLowerCase()}`;
-      } else if (type === "freelancer") {
+        url = `${REACT_APP_API_URL_NEW}/api/service`; // Assuming this fetches all services
+      } else if (type === "category" && category) {
+        url = `${REACT_APP_API_URL_NEW}/api/service/category/${category}`; // Use the category ID directly
+      } else if (type === "freelancer" && freelanceId) {
         url = `${REACT_APP_API_URL_NEW}/api/service/freelancer/${freelanceId}`;
       }
+      
       const response = await axios.get(url);
-      console.log(url)
+      console.log(url); // Log the URL for debugging
       setServices(response.data);
       setLoading(false); // Stop loading after data is fetched
     } catch (error) {
       console.error('Error fetching services:', error);
       setLoading(false); // Stop loading in case of error
-      throw error;
     }
   };
 
   useEffect(() => {
     getServices();
-  }, [type, category]);
+  }, [type, category, freelanceId]); // Ensure the effect runs when type, category, or freelanceId changes
 
   return (
-    <SafeAreaView style={styles.container} >
-      <View >
-       
+    <SafeAreaView style={styles.container}>
+      <View>
         <View style={styles.header}>
-            <TouchableOpacity onPress={() => router.back()}>
+          <TouchableOpacity onPress={() => router.back()}>
             <ArrowLeft color="#000" size={24} />
-            </TouchableOpacity> 
-             <Text style={styles.headerTitle}>{title}</Text>
-            <View style={{ width: 24 }} />
+          </TouchableOpacity> 
+          <Text style={styles.headerTitle}>{title}</Text>
+          <View style={{ width: 24 }} />
         </View>
 
         <FlatList
@@ -68,7 +67,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-header: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
@@ -81,14 +80,9 @@ header: {
     fontSize: 18,
     fontWeight: 'bold',
   },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
   list: {
     padding: 16,
   },
 });
 
 export default BestServicesScreen;
-
