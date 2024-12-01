@@ -22,6 +22,7 @@ const EarningsScreen = () => {
   const [earnings, setEarnings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalEarnings, setTotalEarnings] = useState(0);
+  const [payments, setPayments] = useState([]);
   const { userId } = useGlobalStore();
 
   // Sort payment methods with priority
@@ -67,18 +68,35 @@ const EarningsScreen = () => {
 
   const fetchEarnings = async () => {
     try {
-      const response = await axios.get(`${REACT_APP_API_URL_NEW}/api/appointment/freelancer/${userId}`);
-      const sortedEarnings = sortPaymentMethods(response.data);
+      const response = await axios.get(`${REACT_APP_API_URL_NEW}/api/appointment/freelancer/payment/${userId}`);
+  
+      const completedEarnings = response.data.filter((earning) => earning.status === 'Completed');
+  
+      // Sort the completed earnings
+      const sortedEarnings = sortPaymentMethods(completedEarnings);
+  
       setEarnings(sortedEarnings);
       calculateTotalEarnings(sortedEarnings);
       setLoading(false);
-      console.log(response.data);
+  
     } catch (error) {
       console.error('Error fetching earnings:', error);
       setLoading(false);
       Alert.alert('Error', 'Could not fetch earnings');
     }
   };
+  
+  const fetchPayments = async () => {
+    try {
+      const response = await axios.get(`${REACT_APP_API_URL_NEW}/api/payment/`);
+
+    } catch (error) {
+      console.error('Error fetching earnings:', error);
+      setLoading(false);
+      Alert.alert('Error', 'Could not fetch earnings');
+    }
+  };
+
 
   const calculateTotalEarnings = (earningsData) => {
     const total = earningsData.reduce((sum, earning) => sum + earning.total, 0);
@@ -87,10 +105,12 @@ const EarningsScreen = () => {
 
   const handleMarkPaymentReceived = async (bookingId) => {
     try {
-      await axios.post(`${REACT_APP_API_URL_NEW}/api/freelancer/mark-payment-received`, { 
-        bookingId 
+      console.log(`URL: ${REACT_APP_API_URL_NEW}/api/payment/pay/${bookingId}`)
+
+      await axios.patch(`${REACT_APP_API_URL_NEW}/api/payment/pay/${bookingId}`, { 
+        status:"Completed" 
       });
-      // Refresh earnings after marking payment
+
       fetchEarnings();
       Alert.alert('Success', 'Payment marked as received');
     } catch (error) {
@@ -115,7 +135,13 @@ const EarningsScreen = () => {
   const renderEarningItem = ({ item }) => {
     const renderPaymentAction = () => {
       // Always show 'Mark Received' button for COD payments
-      if (item.paymentMethod === 'COD') {
+      if (item.paymentStatus === 'Completed') {
+        return (
+            <Text>Paid</Text>
+        );
+      }
+
+      else if (item.paymentMethod === 'COD') {
         return (
           <TouchableOpacity 
             style={styles.markReceivedButton}
