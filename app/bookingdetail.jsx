@@ -35,6 +35,7 @@ const handleBookAgain = () => {
   const getAppointmentDetails = async () => {
     try {
       if (appointmentId) {
+        console.log(`${REACT_APP_API_URL_NEW}/api/appointment/${appointmentId}`);
         const response = await axios.get(`${REACT_APP_API_URL_NEW}/api/appointment/${appointmentId}`);
         setAppointment(response.data);
       }
