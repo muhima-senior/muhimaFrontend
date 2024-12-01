@@ -279,8 +279,9 @@ const styles = StyleSheet.create({
   },
   actionContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex',
     marginVertical: 16,
+    padding:10,
   },
   actionButton: {
     flexDirection: 'row',
@@ -288,7 +289,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#f1f1f1',
     padding: 12,
     borderRadius: 8,
-    width: '23%',
+    marginRight:15,
+    width: '50%',
     justifyContent: 'center',
   },
   actionIconContainer: {
