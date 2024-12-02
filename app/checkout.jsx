@@ -5,10 +5,11 @@ import {
   StyleSheet, 
   TouchableOpacity, 
   SafeAreaView, 
-  ScrollView, 
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
+  Platform
 } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 import { useGlobalStore } from './store/GlobalStore';
@@ -94,12 +95,11 @@ const Checkout = () => {
 
   const [cardDetails, setCardDetails] = useState(null);
 
-  // ... (previous functions remain the same)
-
   const handleSaveCard = (details) => {
     setCardDetails(details);
     setPaymentMethod('CreditCard');
   };
+
   const handleDone = () => {
     setShowBookingConfirmation(false);
     route.push('home');
@@ -115,7 +115,13 @@ const Checkout = () => {
         <View style={{ width: 24 }} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <KeyboardAwareScrollView 
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps='handled'
+        extraScrollHeight={Platform.OS === 'ios' ? 100 : 50}
+        enableOnAndroid={true}
+        extraHeight={Platform.OS === 'ios' ? 200 : 100}
+      >
         {/* Order Summary Section */}
         <View style={styles.summaryCard}>
           <Text style={styles.summaryTitle}>Booking Summary</Text>
@@ -166,15 +172,12 @@ const Checkout = () => {
             icon="payments"
             onSelect={() => setPaymentMethod('COD')}
           />
-          {/* <PaymentMethodCard
-            selected={paymentMethod === 'TRANSFER'}
-            title="Online Transfer"
-            icon="account-balance"
-            onSelect={() => setPaymentMethod('TRANSFER')}
-          /> */}
 
           {paymentMethod === 'CreditCard' && (
-            <CardInput onSaveCard={handleSaveCard} />
+            <CardInput 
+              onSaveCard={handleSaveCard} 
+              scrollEnabled={true} // Ensure CardInput supports scrolling if needed
+            />
           )}
         </View>
 
@@ -200,11 +203,10 @@ const Checkout = () => {
         {showBookingConfirmation && (
           <BookingConfirmation onDone={handleDone} />
         )}
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 };
-
 const styles = StyleSheet.create({
   // Combined styles from both components
   container: {
