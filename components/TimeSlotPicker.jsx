@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet,Dimensions } from 'react-native';
 import { useRouter } from "expo-router";
 
 const TimeSlotPicker = ({ availableSlots, quantity, total, serviceId, serviceName }) => {
@@ -70,6 +70,7 @@ const proceedToCheckout = () => {
   
   return (
     <View style={styles.container}>
+       <View style={styles.content}>
       {/* Select Date */}
       <Text style={styles.header}>Select Date</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.dayContainer}>
@@ -135,6 +136,7 @@ const proceedToCheckout = () => {
       </View>
 
       {/* Proceed to Checkout Button */}
+      </View>
       <TouchableOpacity 
         style={[
           styles.checkoutButton,
@@ -153,9 +155,23 @@ const proceedToCheckout = () => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
-    borderRadius: 10,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     backgroundColor: '#fff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingBottom: 20,
+    maxHeight: Dimensions.get('window').height * 0.9, // Limit height to 90% of screen
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  content: {
+  padding: 20,
   },
   header: {
     fontSize: 18,
