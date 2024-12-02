@@ -195,7 +195,7 @@ const EditProfileScreen = () => {
             />
           ) : (
             <LinearGradient
-              colors={[COLORS.primary, COLORS.secondary]}
+              colors={[COLORS.primary, COLORS.gray]}
               style={styles.profilePicturePlaceholder}
             >
               <Ionicons 
