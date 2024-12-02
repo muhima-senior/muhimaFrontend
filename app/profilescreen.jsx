@@ -113,9 +113,10 @@ const styles = StyleSheet.create({
   },
   profileHeader: {
     alignItems: 'center',
-    paddingVertical: 20,
+    paddingVertical: 40, // Increase vertical padding for better spacing
     backgroundColor: '#fff',
     marginBottom: 10,
+    overflow: 'hidden', // Ensure content within stays visible
   },
   profileImage: {
     width: 80,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar, Platform } from 'react-native';
 import { ArrowLeft } from 'lucide-react-native';
 import { COLORS, FONT, SIZES, SHADOWS } from '../../constants/theme';
 import { useRouter } from "expo-router";
@@ -9,19 +9,29 @@ const Terms = () => {
 
   return (
     <View style={styles.container}>
+      {/* Status Bar */}
+      <StatusBar 
+        barStyle="dark-content" 
+        backgroundColor={COLORS.white} 
+      />
+
       {/* Header Section */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
+      <View style={styles.headerContainer}>
+        <TouchableOpacity 
+          onPress={() => router.back()} 
+          style={styles.backButton}
+        >
           <ArrowLeft color={COLORS.black} size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Terms and Conditions</Text>
-        <View style={{ width: 24 }}>
-          {/* Placeholder View for spacing, no text here */}
-        </View>
+        <View style={styles.placeholder} />
       </View>
 
       {/* Content Section */}
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView 
+        contentContainerStyle={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
         <Text style={styles.content}>
           Welcome to our app. By using our services, you agree to the following terms and conditions:
           {"\n\n"}
@@ -45,12 +55,19 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.white,
   },
-  header: {
+  headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
+    justifyContent: 'space-between',
+    paddingTop: Platform.OS === 'ios' ? 50 : 20,
+    paddingBottom: 15,
+    paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.gray2,
+  },
+  backButton: {
+    width: 40,
+    justifyContent: 'center',
   },
   headerTitle: {
     flex: 1,
@@ -58,6 +75,9 @@ const styles = StyleSheet.create({
     fontSize: SIZES.large,
     fontFamily: FONT.bold,
     color: COLORS.black,
+  },
+  placeholder: {
+    width: 40, // Match backButton width to center the title
   },
   scrollContainer: {
     paddingHorizontal: 16,

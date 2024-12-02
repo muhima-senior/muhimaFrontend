@@ -1,27 +1,44 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  ScrollView, 
+  TouchableOpacity, 
+  StatusBar, 
+  Platform 
+} from 'react-native';
 import { ArrowLeft } from 'lucide-react-native';
 import { useRouter } from "expo-router";
-import { COLORS, FONT, SIZES, SHADOWS } from '../../constants/theme';
+import { COLORS, FONT, SIZES } from '../../constants/theme';
 
 const Privacy = () => {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
+      <StatusBar 
+        barStyle="dark-content" 
+        backgroundColor={COLORS.white} 
+      />
+
       {/* Header Section */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
+      <View style={styles.headerContainer}>
+        <TouchableOpacity 
+          onPress={() => router.back()} 
+          style={styles.backButton}
+        >
           <ArrowLeft color={COLORS.black} size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Privacy Policy</Text>
-        <View style={{ width: 24 }}>
-          {/* Placeholder for spacing */}
-        </View>
+        <View style={styles.placeholder} />
       </View>
 
       {/* Content Section */}
-      <ScrollView>
+      <ScrollView 
+        contentContainerStyle={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
         <Text style={styles.content}>
           Your privacy is important to us. This Privacy Policy explains how we collect, use, and protect your information:
           {"\n\n"}
@@ -48,12 +65,19 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.white,
   },
-  header: {
+  headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
+    justifyContent: 'space-between',
+    paddingTop: Platform.OS === 'ios' ? 50 : 20,
+    paddingBottom: 15,
+    paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.gray2,
+  },
+  backButton: {
+    width: 40,
+    justifyContent: 'center',
   },
   headerTitle: {
     flex: 1,
@@ -62,11 +86,17 @@ const styles = StyleSheet.create({
     fontFamily: FONT.bold,
     color: COLORS.black,
   },
+  placeholder: {
+    width: 40,
+  },
+  scrollContainer: {
+    paddingHorizontal: 16,
+    paddingTop: 20,
+    paddingBottom: 20,
+  },
   content: {
     fontSize: SIZES.medium,
     lineHeight: 24,
-    paddingHorizontal: 16,
-    paddingTop: 20,
     fontFamily: FONT.regular,
     color: COLORS.gray,
   },
